@@ -2,26 +2,63 @@ package com.slyvronline.aosa;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.slyvronline.mc.load.LoadFonts;
+import com.slyvronline.mc.load.LoadImgs;
+import com.slyvronline.mc.load.LoadMenus;
+import com.slyvronline.mc.load.LoadMusic;
+import com.slyvronline.mc.load.LoadSounds;
+import com.slyvronline.mc.objects.Global;
+import com.slyvronline.mc.render.Renderer;
+import com.slyvronline.mc.update.Updater;
 
 public class Aosa extends ApplicationAdapter {
-	SpriteBatch batch;
-	Texture img;
+	public static final String TITLE = "Aosa";
+	
+	public static final float STEP = 1/60f;
+	private float accum;
+	
+	private SpriteBatch sb;
+	private OrthographicCamera cam;
+	private OrthographicCamera hudCam;
+	
+	private static Global global;
 	
 	@Override
 	public void create () {
-		batch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
+		global = new Global();
+		global.setDemoMode(true);
+		LoadImgs.load();
+		LoadFonts.load();
+		LoadSounds.load();
+		LoadMusic.load();
+		LoadMenus.load();
 	}
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(1, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		batch.begin();
-		batch.draw(img, 0, 0);
-		batch.end();
+		
+		//Run game at 60 fps
+		accum += Gdx.graphics.getDeltaTime();
+		while(accum >= STEP) {
+			accum -= STEP;
+			Updater.update();
+			Renderer.render();
+		}
+		
 	}
+	
+	@Override
+	public void dispose(){
+		
+	}
+	
+	public static Global getGlobal(){
+		return global;
+	}
+	
+	public void resize(int w, int h) {}
+	public void pause() {}
+	public void resume() {}
 }
