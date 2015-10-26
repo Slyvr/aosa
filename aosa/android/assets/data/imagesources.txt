@@ -26,6 +26,7 @@ data/fonts/Calibri20_0.png
 data/fonts/Calibri24_0.png
 data/fonts/Calibri32_0.png
 data/logos/Logo2_white.png
+data/logos/loadinglogo.png
 data/menuitems/black.png
 data/menuitems/music_bg.png
 data/menuitems/music_info.png
@@ -34,3 +35,13 @@ data/menuitems/music_pause.png
 data/menuitems/music_play.png
 data/menuitems/music_prev.png
 data/menuitems/whitecover.png
+data/menuitems/spinwheel.png
+data/imgs/grass.png
+data/imgs/dirt.png
+data/imgs/fulldirt.png
+data/imgs/tree.png
+data/imgs/base.png
+data/imgs/minerals.png
+data/imgs/gas.png
+data/imgs/mine.png
+data/imgs/refinery.png

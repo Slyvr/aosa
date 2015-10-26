@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.slyvronline.aosa.Aosa;
 import com.slyvronline.mc.objects.Ent;
 import com.slyvronline.mc.objects.Menu;
+import com.slyvronline.mc.utils.GameConstants;
 
 public class OptionsMenu extends Menu {
 
@@ -34,10 +35,10 @@ public class OptionsMenu extends Menu {
 					}
 					if (e.getName().equals("btnFullscreen")){
 						if(Gdx.graphics.isFullscreen()){
-							Gdx.graphics.setDisplayMode(Aosa.getGlobal().getDefaultScreenWidth(), Aosa.getGlobal().getDefaultScreenHeight(), false);
+							Gdx.graphics.setDisplayMode(GameConstants.DEFAULT_WIDTH, GameConstants.DEFAULT_HEIGHT, false);
 						}
 						else{
-							Gdx.graphics.setDisplayMode(Aosa.getGlobal().getDefaultScreenWidth(), Aosa.getGlobal().getDefaultScreenHeight(), true);
+							Gdx.graphics.setDisplayMode(GameConstants.DEFAULT_WIDTH, GameConstants.DEFAULT_HEIGHT, true);
 						}
 					}
 					if (e.getName().equals("btnVolumeDown")){

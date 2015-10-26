@@ -30,10 +30,12 @@ public class MusicMenu extends Menu {
 	}
 	
 	public void update(){
+		/*
 		updateVolume();
 		updateButtonClick();
 		updateMusicTransition();
 		displayMusicInfo();
+		*/
 	}
 	
 	public void updateVolume(){

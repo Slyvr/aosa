@@ -27,6 +27,5 @@ public class LoadMusic {
 		
 		Aosa.getGlobal().setTracks(tracks);
 		Aosa.getGlobal().setCurrentTrack(tracks.get(new Random().nextInt(tracks.size()-1)));
-		Aosa.getGlobal().getCurrentTrack().getMusic().play();
 	}
 }

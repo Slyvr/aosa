@@ -46,6 +46,7 @@ public class Ent {
 	private long lifetime;
 	private boolean display;
 	private State state;
+	private boolean rotate;
 	private enum State {
 		HOVER, CLICKED, JUMP, STAND, INJURED, DEAD
 	}
@@ -292,6 +293,12 @@ public class Ent {
 	}
 	public void setDisplay(boolean display) {
 		this.display = display;
+	}
+	public boolean isRotate() {
+		return rotate;
+	}
+	public void setRotate(boolean rotate) {
+		this.rotate = rotate;
 	}
 
 	public Map<String,String> getMapData(String prefix){

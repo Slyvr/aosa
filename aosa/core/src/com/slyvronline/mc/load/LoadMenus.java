@@ -17,6 +17,7 @@ public class LoadMenus {
 		ArrayList<Menu> menus = new ArrayList<Menu>();
 		
 		menus.add(loadSplashMenu());
+		menus.add(loadLoadMenu());
 		menus.add(loadMainMenu());
 		menus.add(loadGameMenu());
 		menus.add(loadMusicMenu());
@@ -47,6 +48,37 @@ public class LoadMenus {
 		return menu;
 	}
 	
+	public static Menu loadLoadMenu(){
+		LoadMenu menu = new LoadMenu();
+		
+		menu.setName("load");
+		
+		ArrayList<Ent> ents = new ArrayList<Ent>();
+
+		Ent logo = new Ent();
+		logo.setName("logo");
+		logo.setImg(Aosa.getGlobal().getImgByName("loadinglogo"));
+		logo.setPosBox(new Rectangle((Gdx.graphics.getWidth()/2)-(logo.getImg().getTex().getWidth()/2),
+				(Gdx.graphics.getHeight()/2)-(logo.getImg().getTex().getHeight()/2),
+				logo.getImg().getTex().getWidth(),
+				logo.getImg().getTex().getHeight()));
+		ents.add(logo);
+		
+		Ent spinwheel = new Ent();
+		spinwheel.setName("spinwheel");
+		spinwheel.setImg(Aosa.getGlobal().getImgByName("spinwheel"));
+		spinwheel.setPosBox(new Rectangle((Gdx.graphics.getWidth()/2)-(spinwheel.getImg().getTex().getWidth()/2),
+				(Gdx.graphics.getHeight()/2)-(spinwheel.getImg().getTex().getHeight()/2) - 100,
+				spinwheel.getImg().getTex().getWidth(),
+				spinwheel.getImg().getTex().getHeight()));
+		spinwheel.setRotate(true);
+		ents.add(spinwheel);
+		
+		menu.setEnts(ents);
+		
+		return menu;
+	}
+	
 	public static Menu loadMainMenu(){
 		MainMenu menu = new MainMenu();
 		menu.setName("main");
@@ -61,6 +93,33 @@ public class LoadMenus {
 				logo.getImg().getTex().getWidth(),
 				logo.getImg().getTex().getHeight()));
 		ents.add(logo);
+		
+		Ent btnPlay = new Ent();
+		btnPlay.setName("btnPlay");
+		btnPlay.setImg(Aosa.getGlobal().getImgByName("btnPlay"));
+		btnPlay.setPosBox(new Rectangle(80,
+				400 - btnPlay.getImg().getTex().getHeight() - 5,
+				btnPlay.getImg().getTex().getWidth(),
+				btnPlay.getImg().getTex().getHeight()));
+		ents.add(btnPlay);
+		
+		Ent btnOptions = new Ent();
+		btnOptions.setName("btnOptions");
+		btnOptions.setImg(Aosa.getGlobal().getImgByName("btnOptions"));
+		btnOptions.setPosBox(new Rectangle(btnPlay.getPosBox().getX(),
+				btnPlay.getPosBox().getY() - btnOptions.getImg().getTex().getHeight() - 5,
+				btnOptions.getImg().getTex().getWidth(),
+				btnOptions.getImg().getTex().getHeight()));
+		ents.add(btnOptions);
+		
+		Ent btnExit = new Ent();
+		btnExit.setName("btnExit");
+		btnExit.setImg(Aosa.getGlobal().getImgByName("btnExit"));
+		btnExit.setPosBox(new Rectangle(btnPlay.getPosBox().getX(),
+				btnOptions.getPosBox().getY() - btnExit.getImg().getTex().getHeight() - 5,
+				btnExit.getImg().getTex().getWidth(),
+				btnExit.getImg().getTex().getHeight()));
+		ents.add(btnExit);
 		
 		menu.setEnts(ents);
 		
@@ -78,6 +137,22 @@ public class LoadMenus {
 		menu.setName("game");
 		
 		ArrayList<Ent> ents = new ArrayList<Ent>();
+		
+		Ent blockTooltip = new Ent();
+		blockTooltip.setName("blockTooltip");
+		blockTooltip.setText("BlockToolTip");
+		blockTooltip.setFont(Aosa.getGlobal().getFontByName("Calibri16"));
+		blockTooltip.setPosBox(new Rectangle(
+				0, Gdx.graphics.getHeight(),0,0));
+		ents.add(blockTooltip);
+		
+		Ent debugTooltip = new Ent();
+		debugTooltip.setName("debugTooltip");
+		debugTooltip.setText("FPS: ");
+		debugTooltip.setFont(Aosa.getGlobal().getFontByName("Calibri16"));
+		debugTooltip.setPosBox(new Rectangle(
+				Gdx.graphics.getWidth() - 100, Gdx.graphics.getHeight(),0,0));
+		ents.add(debugTooltip);
 		
 		menu.setEnts(ents);
 		

@@ -19,10 +19,6 @@ public class Aosa extends ApplicationAdapter {
 	public static final float STEP = 1/60f;
 	private float accum;
 	
-	private SpriteBatch sb;
-	private OrthographicCamera cam;
-	private OrthographicCamera hudCam;
-	
 	private static Global global;
 	
 	@Override

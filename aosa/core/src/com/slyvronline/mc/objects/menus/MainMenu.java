@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.slyvronline.aosa.Aosa;
+import com.slyvronline.mc.load.LoadGameInstance;
 import com.slyvronline.mc.objects.Ent;
 import com.slyvronline.mc.objects.Menu;
 
@@ -42,6 +43,10 @@ public class MainMenu extends Menu {
 					Aosa.getGlobal().getSoundByName("click").getSound().play();
 					if (e.getName().equals("btnExit")){
 						Gdx.app.exit();
+					}
+					else if (e.getName().equals("btnPlay")){
+						Aosa.getGlobal().setCurrentMenu(Aosa.getGlobal().getMenuByName("load"));
+						LoadGameInstance.load("sandbox");
 					}
 				}
 			}
