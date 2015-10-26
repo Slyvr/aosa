@@ -26,6 +26,11 @@ public class Renderer {
 		WorldGeneratorThread thread = Aosa.getGlobal().getThread();
 		
 		if (thread == null){
+			if (Aosa.getGlobal().getBackMenu()!=null){
+				batch.setProjectionMatrix(Aosa.getGlobal().getBackCam().combined);
+				Aosa.getGlobal().getBackMenu().render(batch);
+			}
+			
 			batch.setProjectionMatrix(Aosa.getGlobal().getCamera().combined);
 			
 			if (Aosa.getGlobal().getGame() != null){
@@ -33,7 +38,7 @@ public class Renderer {
 			}
 		}
 		
-		batch.setProjectionMatrix(Aosa.getGlobal().getHudCamera().combined);
+		batch.setProjectionMatrix(Aosa.getGlobal().getHudCam().combined);
 		
 		Aosa.getGlobal().getCurrentMenu().render(batch);
 		

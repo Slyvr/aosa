@@ -27,6 +27,7 @@ public class PauseMenu extends Menu {
 					if (e.getName().equals("btnMainMenu")){
 						Aosa.getGlobal().getCurrentMenu().setCurrentSubMenu(null);
 						Aosa.getGlobal().setCurrentMenu(Aosa.getGlobal().getMenuByName("main"));
+						Aosa.getGlobal().setBackMenu(null);
 						Aosa.getGlobal().setGame(null);
 					}
 					if (e.getName().equals("btnReturn")){

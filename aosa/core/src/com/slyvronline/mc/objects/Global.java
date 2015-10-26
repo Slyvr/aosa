@@ -27,12 +27,14 @@ public class Global {
 	private ArrayList<Font> fonts;
 	private ArrayList<Menu> menus;
 	
+	private Menu backMenu;
 	private Menu currentMenu;
 	private Menu musicMenu;
 	private AudioTrack currentTrack;
 	private GameInstance game;
 	private GameOptions options;
 	
+	private OrthographicCamera backCam;
 	private OrthographicCamera camera;
 	private OrthographicCamera hudCam;
 	private SpriteBatch batch;
@@ -50,6 +52,8 @@ public class Global {
 		camera.setToOrtho(false, GameConstants.DEFAULT_WIDTH, GameConstants.DEFAULT_HEIGHT);
 		hudCam = new OrthographicCamera();
 		hudCam.setToOrtho(false, GameConstants.DEFAULT_WIDTH, GameConstants.DEFAULT_HEIGHT);
+		backCam = new OrthographicCamera();
+		backCam.setToOrtho(false, GameConstants.DEFAULT_WIDTH, GameConstants.DEFAULT_HEIGHT);
 		this.demoMode = false;
 		genThread = new WorldGeneratorThread("thread1");
 	}
@@ -116,17 +120,35 @@ public class Global {
 	public void setCamera(OrthographicCamera camera) {
 		this.camera = camera;
 	}
-	public OrthographicCamera getHudCamera() {
-		return hudCam;
-	}
-	public void setHudCamera(OrthographicCamera hudCam) {
-		this.hudCam = hudCam;
-	}
 	public SpriteBatch getBatch() {
 		return batch;
 	}
 	public void setBatch(SpriteBatch batch) {
 		this.batch = batch;
+	}
+	public Menu getBackMenu() {
+		return backMenu;
+	}
+	public void setBackMenu(Menu backMenu) {
+		this.backMenu = backMenu;
+	}
+	public OrthographicCamera getHudCam() {
+		return hudCam;
+	}
+	public void setHudCam(OrthographicCamera hudCam) {
+		this.hudCam = hudCam;
+	}
+	public OrthographicCamera getBackCam() {
+		return backCam;
+	}
+	public void setBackCam(OrthographicCamera backCam) {
+		this.backCam = backCam;
+	}
+	public WorldGeneratorThread getGenThread() {
+		return genThread;
+	}
+	public void setGenThread(WorldGeneratorThread genThread) {
+		this.genThread = genThread;
 	}
 	public Menu getCurrentMenu() {
 		return currentMenu;

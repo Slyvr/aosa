@@ -40,6 +40,7 @@ public class GameInstance {
 	}
 	
 	public void update(){
+		world.update();
 		gameOverCheck();
 		moveMap();
 		updateBlockTooltip();

@@ -20,6 +20,7 @@ public class LoadMenus {
 		menus.add(loadLoadMenu());
 		menus.add(loadMainMenu());
 		menus.add(loadGameMenu());
+		menus.add(loadBackMenu());
 		menus.add(loadMusicMenu());
 		
 		Aosa.getGlobal().setMenus(menus);
@@ -163,6 +164,39 @@ public class LoadMenus {
 		subMenus.add(loadCreditsMenu());
 		subMenus.add(loadGameOverMenu());
 		subMenus.add(loadGameWinMenu());
+		
+		menu.setSubMenus(subMenus);
+		
+		return menu;
+	}
+	
+	public static Menu loadBackMenu(){
+		SkyboxMenu menu = new SkyboxMenu();
+		menu.setName("skybox");
+		
+		ArrayList<Ent> ents = new ArrayList<Ent>();
+		
+		Ent skybox1 = new Ent();
+		skybox1.setName("skybox1");
+		skybox1.setImg(Aosa.getGlobal().getImgByName("skybox"));
+		skybox1.setPosBox(new Rectangle(0,
+				0,
+				skybox1.getImg().getTex().getWidth(),
+				skybox1.getImg().getTex().getHeight()));
+		ents.add(skybox1);
+		
+		Ent skybox2 = new Ent();
+		skybox2.setName("skybox2");
+		skybox2.setImg(Aosa.getGlobal().getImgByName("skybox"));
+		skybox2.setPosBox(new Rectangle(-skybox2.getImg().getTex().getWidth(),
+				0,
+				skybox2.getImg().getTex().getWidth(),
+				skybox2.getImg().getTex().getHeight()));
+		ents.add(skybox2);
+		
+		menu.setEnts(ents);
+		
+		ArrayList<Menu> subMenus = new ArrayList<Menu>();
 		
 		menu.setSubMenus(subMenus);
 		

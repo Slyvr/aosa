@@ -45,3 +45,4 @@ data/imgs/minerals.png
 data/imgs/gas.png
 data/imgs/mine.png
 data/imgs/refinery.png
+data/imgs/skybox.png

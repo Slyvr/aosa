@@ -3,6 +3,7 @@ package com.slyvronline.mc.objects;
 import java.util.ArrayList;
 import java.util.Random;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
@@ -14,7 +15,7 @@ import com.slyvronline.mc.objects.buildings.Refinery;
 import com.slyvronline.mc.utils.GameConstants;
 
 public class World {
-
+	
 	private ArrayList<Block> bottomBlocks;
 	private ArrayList<Block> baseBlocks;
 	private ArrayList<Integer> buildableIndexes;
@@ -40,6 +41,10 @@ public class World {
 		wgt.start();
 	}
 	
+	public void update(){
+		
+	}
+	
 	public void render(SpriteBatch batch){
 		for(Block block : bottomBlocks){
 			block.render(batch);
@@ -60,7 +65,7 @@ public class World {
 				block.setBlockName("Dirt");
 				block.setImg(Aosa.getGlobal().getImgByName("fulldirt"));
 				block.setPosBox(new Rectangle(x*block.getImg().getTex().getWidth(),
-						100-(block.getImg().getTex().getHeight()*y),
+						80-(block.getImg().getTex().getHeight()*y),
 						block.getImg().getTex().getWidth(),
 						block.getImg().getTex().getHeight()));
 				bottomBlocks.add(block);
@@ -120,7 +125,7 @@ public class World {
 				block.setOverlandImg(null);
 				block.setImg(Aosa.getGlobal().getImgByName("grass"));
 				block.setPosBox(new Rectangle((x+i)*block.getImg().getTex().getWidth(),
-						100,
+						80,
 						block.getImg().getTex().getWidth(),
 						block.getImg().getTex().getHeight()));
 				baseBlocks.add(block);

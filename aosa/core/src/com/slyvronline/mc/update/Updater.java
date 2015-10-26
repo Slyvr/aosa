@@ -23,8 +23,12 @@ public class Updater {
 			
 			Aosa.getGlobal().getMusicMenu().update();
 			
+			if (Aosa.getGlobal().getBackMenu()!=null)
+				Aosa.getGlobal().getBackMenu().update();
+			
 			Aosa.getGlobal().getCamera().update();
-			Aosa.getGlobal().getHudCamera().update();
+			Aosa.getGlobal().getHudCam().update();
+			Aosa.getGlobal().getBackCam().update();
 		}
 	}
 }
