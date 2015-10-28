@@ -67,8 +67,11 @@ public class BuildMenu extends Menu {
 				float buildX = 0;
 				for(Block b : grp.getBlocks()){
 					if (b.isBuildable()){
+						if (buildX == 0)
 						buildX = b.getPosBox().getX();
-						break;
+					}
+					if (b.getOverlandImg() != null && b.getOverlandImg().getName().equals("minerals")){
+						b.setOverlandImg(null);
 					}
 				}
 				mine.setPosBox(new Rectangle(
@@ -98,8 +101,11 @@ public class BuildMenu extends Menu {
 				float buildX = 0;
 				for(Block b : grp.getBlocks()){
 					if (b.isBuildable()){
+						if (buildX == 0)
 						buildX = b.getPosBox().getX();
-						break;
+					}
+					if (b.getOverlandImg() != null && b.getOverlandImg().getName().equals("gas")){
+						b.setOverlandImg(null);
 					}
 				}
 				refinery.setPosBox(new Rectangle(

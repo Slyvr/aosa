@@ -29,6 +29,7 @@ public class World {
 	private ArrayList<Grunt> grunts;
 	private MainCharacter mainChar;
 	private Ent summon;
+	private int worldSize = 1000;
 	
 	public World(){
 		bottomBlocks = new ArrayList<Block>();
@@ -98,7 +99,7 @@ public class World {
 		mainChar = new MainCharacter();
 		mainChar.setName("Main");
 		mainChar.setImg(Aosa.getGlobal().getImgByName("mainchar"));
-		mainChar.setPosBox(new Rectangle(32*(1000)+64,
+		mainChar.setPosBox(new Rectangle(32*(worldSize/2)+64,
 				80+32,
 				mainChar.getImg().getTex().getWidth(),
 				mainChar.getImg().getTex().getHeight()));
@@ -111,7 +112,7 @@ public class World {
 			w.setName("Worker");
 			w.setId(i);
 			w.setImg(Aosa.getGlobal().getImgByName("worker"));
-			w.setPosBox(new Rectangle(32*(1000)+64 + 32 + (i*w.getImg().getTex().getWidth()),
+			w.setPosBox(new Rectangle(32*(worldSize/2)+64 + 32 + (i*w.getImg().getTex().getWidth()),
 					80+32,
 					w.getImg().getTex().getWidth(),
 					w.getImg().getTex().getHeight()));
@@ -120,7 +121,10 @@ public class World {
 	}
 	
 	public void setupWorld(){
-		int worldSize = 2000;
+		procedurallyGenerateWorld();
+	}
+	
+	public void procedurallyGenerateWorld(){
 		int blockGrpSize = 10;
 		//Setup fulldirt baseblocks
 		for(int y=1; y<4; y++){
@@ -166,18 +170,18 @@ public class World {
 			Random rand = new Random();
 			int randInt = rand.nextInt(100);
 			//Buildable
-			if (randInt > 20){
+			if (randInt > 5){
 				buildable = true;
 				int randInt2 = rand.nextInt(100);
-				if (randInt2 > 60)	buildSize = 2;
+				if (randInt2 > 50)	buildSize = 2;
 				else if (randInt2 > 10) buildSize = 4;
 				else buildSize = 8;
 				if (buildSize == 2){
-					if (rand.nextInt(100) > 50){
-						if(rand.nextBoolean())
-							mineral = true;
-						else
+					if (rand.nextInt(100) > 35){
+						if(rand.nextBoolean() && rand.nextBoolean())
 							gas = true;
+						else
+							mineral = true;
 					}
 				}
 			}
@@ -259,6 +263,7 @@ public class World {
 						}
 						block.setBlockBuildable();
 						block.setGas();
+						block.setOverlandImg(null);
 						buildSizeCounter++;
 					}
 				}
@@ -273,6 +278,7 @@ public class World {
 						}
 						block.setBlockBuildable();
 						block.setMineral();
+						block.setOverlandImg(null);
 						buildSizeCounter++;
 					}
 				}

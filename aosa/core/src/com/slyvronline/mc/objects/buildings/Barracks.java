@@ -1,8 +1,12 @@
 package com.slyvronline.mc.objects.buildings;
 
+import java.util.ArrayList;
+
+import com.badlogic.gdx.math.Rectangle;
 import com.slyvronline.aosa.Aosa;
 import com.slyvronline.mc.objects.Block;
 import com.slyvronline.mc.objects.BlockGroup;
+import com.slyvronline.mc.objects.characters.Worker;
 
 public class Barracks extends Building {
 
@@ -18,7 +22,7 @@ public class Barracks extends Building {
 
 	@Override
 	public void update() {
-		
+		updateActionStart();
 	}
 
 	@Override
@@ -28,6 +32,14 @@ public class Barracks extends Building {
 
 	@Override
 	public void updateBuildingAction(BlockGroup grp) {
-		
+		this.setActionProgress(this.getActionProgress() - 1);
+		if (this.getActionProgress() <= 0){
+			//Action executes
+			ArrayList<Worker> workers = Aosa.getGlobal().getGame().getWorld().getWorkers();
+			grp.getWorker().setSelected(false);
+			workers.add(grp.getWorker());
+			grp.setWorker(null);
+			Aosa.getGlobal().getGame().getWorld().setWorkers(workers);
+		}
 	}
 }

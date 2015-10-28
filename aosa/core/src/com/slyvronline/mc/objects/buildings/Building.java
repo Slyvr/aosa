@@ -1,8 +1,11 @@
 package com.slyvronline.mc.objects.buildings;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.slyvronline.aosa.Aosa;
 import com.slyvronline.mc.objects.BlockGroup;
 import com.slyvronline.mc.objects.Ent;
+import com.slyvronline.mc.objects.characters.Worker;
 
 public abstract class Building extends Ent{
 
@@ -25,6 +28,35 @@ public abstract class Building extends Ent{
 	public abstract void updateWorkerActivity(BlockGroup grp);
 	
 	public abstract void updateBuildingAction(BlockGroup grp);
+	
+	public void updateActionStart(){
+		if (Gdx.input.isKeyJustPressed(Keys.UP) || Gdx.input.isKeyJustPressed(Keys.W)){
+			//If starting action when player is on this building, execute action
+			BlockGroup grp = Aosa.getGlobal().getGame().getWorld().getSelectedBlockGroup();
+			if (grp.getBuilding() != null){
+				if (grp.getBuilding().equals(this)){
+					//Execute action of Base
+					Worker worker = Aosa.getGlobal().getGame().getWorld().getAvailableWorker();
+					if (worker != null){
+						int mineralsCollected = Aosa.getGlobal().getGame().getMineralsCollected();
+						int gasCollected = Aosa.getGlobal().getGame().getGasCollected();
+						if (mineralsCollected >= this.getActionMineralCost() &&
+								gasCollected >= this.getActionGasCost()){
+							Aosa.getGlobal().getGame().setGasCollected(gasCollected - this.getActionGasCost());
+							Aosa.getGlobal().getGame().setMineralsCollected(mineralsCollected - this.getActionMineralCost());
+							Aosa.getGlobal().getSoundByName("click").getSound().play();
+							grp.setWorker(worker);
+							Aosa.getGlobal().getGame().getWorld().getWorkers().remove(worker);
+							this.setActionProgress(1000);
+						}
+						else{
+							Aosa.getGlobal().getSoundByName("error").getSound().play();
+						}
+					}
+				}
+			}
+		}
+	}
 	
 	public void updateBuildProgress(BlockGroup grp){
 		if (buildProgress > 0){
