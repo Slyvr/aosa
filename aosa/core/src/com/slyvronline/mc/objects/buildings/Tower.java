@@ -1,6 +1,7 @@
 package com.slyvronline.mc.objects.buildings;
 
 import com.slyvronline.mc.objects.Block;
+import com.slyvronline.mc.objects.BlockGroup;
 
 public class Tower extends Building{
 
@@ -17,7 +18,7 @@ public class Tower extends Building{
 	}
 
 	@Override
-	public void updateWorkerActivity(Block b) {
+	public void updateWorkerActivity(BlockGroup grp) {
 		
 	}
 }

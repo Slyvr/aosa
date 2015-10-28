@@ -10,6 +10,7 @@ import com.slyvronline.mc.objects.characters.Worker;
 
 public class Block extends Ent {
 
+	private int id;
 	private String blockName;
 	private boolean buildable;
 	private Building building;
@@ -25,27 +26,33 @@ public class Block extends Ent {
 	
 	public void updateWorker(){
 		if (worker != null){
+			//Move worker to location
+			float centerX = this.getPosBox().getX();
 			if (worker.getPosBox().getWidth() > 1){
-				if (worker.getPosBox().getX() < this.getPosBox().getX()){
+				if (worker.getPosBox().getX() < centerX){
 					worker.getPosBox().setX(worker.getPosBox().getX() + worker.getWalkSpeed());
 				}
-				if (worker.getPosBox().getX() > this.getPosBox().getX()){
+				if (worker.getPosBox().getX() > centerX){
 					worker.getPosBox().setX(worker.getPosBox().getX() - worker.getWalkSpeed());
 				}
-				if ((worker.getPosBox().getX() <= this.getPosBox().getX()+10) &&
-						(worker.getPosBox().getX() >= this.getPosBox().getX()-10)){
+				if ((worker.getPosBox().getX() <= centerX+10) &&
+						(worker.getPosBox().getX() >= centerX-10)){
+					//Update work
 					if (dismantleAmt > 0){
-						dismantleAmt--;
-						if (dismantleAmt<=0){
-							Aosa.getGlobal().getGame().getWorld().getWorkers().add(worker);
-							worker = null;
-							this.overlandImg = null;
-						}
+						this.dismantleAmt = dismantleAmt - 1;
 					}
-					else if (building != null){
-						if (building.isCanBeAssigned()){
-							building.updateWorkerActivity(this);
+					else{
+						Random rand = new Random();
+						if (rand.nextBoolean()){
+							Aosa.getGlobal().getGame().setMineralsCollected(Aosa.getGlobal().getGame().getMineralsCollected() + rand.nextInt(5) + 3);
 						}
+						else{
+							Aosa.getGlobal().getGame().setGasCollected(Aosa.getGlobal().getGame().getGasCollected() + rand.nextInt(5) + 3);
+						}
+						this.overlandImg = null;
+						this.worker.setSelected(false);
+						Aosa.getGlobal().getGame().getWorld().getWorkers().add(this.worker);
+						this.worker = null;
 					}
 				}
 			}
@@ -132,6 +139,12 @@ public class Block extends Ent {
 		this.dismantleAmt = 1000;
 	}
 	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
 	public String getBlockName() {
 		return blockName;
 	}

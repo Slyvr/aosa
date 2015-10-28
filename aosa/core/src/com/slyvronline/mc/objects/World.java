@@ -21,13 +21,9 @@ public class World {
 	
 	private ArrayList<Block> bottomBlocks;
 	private ArrayList<BlockGroup> blockGroups;
-	private ArrayList<Block> baseBlocks;
-	private ArrayList<Integer> buildableIndexes;
-	private ArrayList<Integer> mineralIndexes;
-	private ArrayList<Integer> gasIndexes;
-	private ArrayList<Integer> dismantleIndexes;
 	
 	private Block selectedBlock;
+	private BlockGroup selectedBlockGroup;
 	
 	private ArrayList<Worker> workers;
 	private ArrayList<Grunt> grunts;
@@ -36,11 +32,7 @@ public class World {
 	
 	public World(){
 		bottomBlocks = new ArrayList<Block>();
-		baseBlocks = new ArrayList<Block>();
-		buildableIndexes = new ArrayList<Integer>();
-		mineralIndexes = new ArrayList<Integer>();
-		gasIndexes = new ArrayList<Integer>();
-		dismantleIndexes = new ArrayList<Integer>();
+		blockGroups = new ArrayList<BlockGroup>();
 		
 		summon = new Ent();
 		summon.setName("summon");
@@ -60,8 +52,8 @@ public class World {
 			w.update();
 		}
 		
-		for(Block b : baseBlocks){
-			b.update();
+		for(BlockGroup grp : blockGroups){
+			grp.update();
 		}
 	}
 	
@@ -69,8 +61,8 @@ public class World {
 		for(Block block : bottomBlocks){
 			block.render(batch);
 		}
-		for(Block block : baseBlocks){
-			block.render(batch);
+		for(BlockGroup grp : blockGroups){
+			grp.render(batch);
 		}
 		
 		for(Worker w : workers){
@@ -129,6 +121,7 @@ public class World {
 	
 	public void setupWorld(){
 		int worldSize = 2000;
+		int blockGrpSize = 10;
 		//Setup fulldirt baseblocks
 		for(int y=1; y<4; y++){
 			for(int x=0; x<worldSize; x++){
@@ -150,7 +143,8 @@ public class World {
 		Refinery refinery = new Refinery();
 		
 		//Build baseBlocks
-		for(int x=0; x<worldSize; x+=8){
+		int groupIdCounter=0;
+		for(int x=0; x<worldSize; x+=blockGrpSize){
 			//Determine if we are at the main base location
 			boolean mainBase=false;
 			boolean mainGas = false;
@@ -158,10 +152,10 @@ public class World {
 			if (x==worldSize/2){
 				mainBase = true;
 			}
-			if (x==(worldSize/2)-8){
+			if (x==(worldSize/2)-blockGrpSize){
 				mainGas=true;
 			}
-			if (x==(worldSize/2)+8){
+			if (x==(worldSize/2)+blockGrpSize){
 				mainMineral=true;
 			}
 			//Determine what type this set of blocks is going to be
@@ -172,69 +166,118 @@ public class World {
 			Random rand = new Random();
 			int randInt = rand.nextInt(100);
 			//Buildable
-			if (randInt > 40){
+			if (randInt > 20){
 				buildable = true;
-				if (rand.nextBoolean())	buildSize = 2;
-				else if (rand.nextBoolean()) buildSize = 4;
+				int randInt2 = rand.nextInt(100);
+				if (randInt2 > 60)	buildSize = 2;
+				else if (randInt2 > 10) buildSize = 4;
 				else buildSize = 8;
 				if (buildSize == 2){
-					if(rand.nextBoolean())
-						mineral = true;
-					else
-						gas = true;
+					if (rand.nextInt(100) > 50){
+						if(rand.nextBoolean())
+							mineral = true;
+						else
+							gas = true;
+					}
 				}
 			}
+			//Setup the block group data
+			BlockGroup grp = new BlockGroup();
+			grp.setId(groupIdCounter);
+			groupIdCounter++;
+			if (mainBase){
+				grp.setBuildable(true);
+				grp.setBuilding(base);
+				buildSize = 8;
+			}
+			else if (mainGas){
+				grp.setBuildable(true);
+				grp.setGasAmt(1000);
+				grp.setBuilding(refinery);
+				buildSize = 2;
+			}
+			else if (mainMineral){
+				grp.setBuildable(true);
+				grp.setMineralAmt(1000);
+				grp.setBuilding(mine);
+				buildSize = 2;
+			}
+			else if (mineral){
+				grp.setMineralAmt(1000);
+				grp.setBuildable(true);
+				//block.setMineral();
+			}
+			else if (gas){
+				grp.setGasAmt(1000);
+				grp.setBuildable(true);
+				//block.setGas();
+			}
+			else if (buildable){
+				grp.setBuildable(true);
+			}
 			
+			//Populate block group with blocks
 			int buildSizeCounter = 0;
-			boolean buildingSet = false;
-			for(int i=0; i<8; i++){
+			float buildSizeStartX = 0;
+			if (grp.isBuildable()){
+				float blockGroupStartX = (x*32);
+				float buildSizeAddition = (((10-buildSize)*32)/2);
+				buildSizeStartX = blockGroupStartX + buildSizeAddition;
+			}
+			for(int i=0; i<blockGrpSize; i++){
 				Block block = new Block();
 				block.setName("block");
+				block.setId(groupIdCounter);
 				block.setType("base");
 				block.setBlockName("Grass");
-				block.setBuildable(false);
-				block.setBuilding(null);
-				block.setOverlandImg(null);
 				block.setImg(Aosa.getGlobal().getImgByName("grass"));
 				block.setPosBox(new Rectangle((x+i)*block.getImg().getTex().getWidth(),
 						80,
 						block.getImg().getTex().getWidth(),
 						block.getImg().getTex().getHeight()));
-				baseBlocks.add(block);
-				if (mainBase){
-					block.setBlockBuildable();
-					block.setBuilding(base);
-					if (!buildingSet){
-						block.setOverlandImg(Aosa.getGlobal().getImgByName("base"));
-						buildingSet = true;
+				if(mainBase){
+					if (buildSizeCounter<buildSize && block.getPosBox().getX() >= buildSizeStartX){
+						if (grp.getBuilding().getPosBox().getX()==0){
+							grp.getBuilding().setPosBox(new Rectangle(
+									block.getPosBox().getX(),
+									80+32,
+									grp.getBuilding().getImg().getTex().getWidth(),
+									grp.getBuilding().getImg().getTex().getHeight()));
+						}
+						block.setBlockBuildable();
+						buildSizeCounter++;
 					}
 				}
 				else if (mainGas){
-					if (buildSizeCounter < 2){
+					if (buildSizeCounter<buildSize  && block.getPosBox().getX() >= buildSizeStartX){
+						if (grp.getBuilding().getPosBox().getX()==0){
+							grp.getBuilding().setPosBox(new Rectangle(
+									block.getPosBox().getX(),
+									80+32,
+									grp.getBuilding().getImg().getTex().getWidth(),
+									grp.getBuilding().getImg().getTex().getHeight()));
+						}
 						block.setBlockBuildable();
-						block.setBuilding(refinery);
-						block.setGasAmt(1000);
+						block.setGas();
 						buildSizeCounter++;
-					}
-					if (!buildingSet){
-						block.setOverlandImg(Aosa.getGlobal().getImgByName("refinery"));
-						buildingSet = true;
 					}
 				}
 				else if (mainMineral){
-					if (buildSizeCounter >= 6){
-						block.setBlockBuildable();
-						block.setBuilding(mine);
-						block.setMineralAmt(1000);
-						if (!buildingSet){
-							block.setOverlandImg(Aosa.getGlobal().getImgByName("mine"));
-							buildingSet = true;
+					if (buildSizeCounter<buildSize  && block.getPosBox().getX() >= buildSizeStartX){
+						if (grp.getBuilding().getPosBox().getX()==0){
+							grp.getBuilding().setPosBox(new Rectangle(
+									block.getPosBox().getX(),
+									80+32,
+									grp.getBuilding().getImg().getTex().getWidth(),
+									grp.getBuilding().getImg().getTex().getHeight()));
 						}
+						block.setBlockBuildable();
+						block.setMineral();
+						buildSizeCounter++;
 					}
-					buildSizeCounter++;
 				}
 				else if (buildable){
-					if (buildSizeCounter<buildSize){
+					if (buildSizeCounter<buildSize  && block.getPosBox().getX() >= buildSizeStartX){
 						block.setBlockBuildable();
 						if (mineral) block.setMineral();
 						if (gas) block.setGas();
@@ -249,45 +292,33 @@ public class World {
 						block.setTree();
 					}
 				}
+				
+				grp.getBlocks().add(block);
 			}
+			blockGroups.add(grp);
 		}
 		
-		for(int i=0; i<baseBlocks.size(); i++){
-			Block b = baseBlocks.get(i);
-			if (b.isBuildable()){
-				buildableIndexes.add(i);
-			}
-			if (b.getMineralAmt() > 0){
-				mineralIndexes.add(i);
-			}
-			if (b.getGasAmt() > 0){
-				gasIndexes.add(i);
-			}
-			if (b.getDismantleAmt() > 0){
-				dismantleIndexes.add(i);
-			}
-		}
-		
-		Aosa.getGlobal().getCamera().position.x = 32*(baseBlocks.size()/2)+64;
+		Aosa.getGlobal().getCamera().position.x = 32*(worldSize/2)+64;
 		//End of map
 		//Aosa.getGlobal().getCamera().translate((32*(baseBlocks.size())), 0, 0);
 	}
 	
 	public void setSelectedBlock(){
 		Rectangle charPos = new Rectangle(mainChar.getPosBox().getX()+(mainChar.getImg().getTex().getWidth()/2),80+16,1,1);
-		for(Block b : baseBlocks){
-			if (b.getPosBox().overlaps(charPos)){
-				selectedBlock = b;
+		boolean foundSelected = false;
+		for(BlockGroup grp : blockGroups){
+			for (Block b : grp.getBlocks()){
+				if (b.getPosBox().overlaps(charPos)){
+					selectedBlock = b;
+					foundSelected = true;
+					break;
+				}
+			}
+			if (foundSelected){
+				selectedBlockGroup = grp;
 				break;
 			}
 		}
-	}
-	
-	public ArrayList<Block> getBaseBlocks() {
-		return baseBlocks;
-	}
-	public void setBaseBlocks(ArrayList<Block> baseBlocks) {
-		this.baseBlocks = baseBlocks;
 	}
 
 	public ArrayList<Block> getBottomBlocks() {
@@ -297,29 +328,13 @@ public class World {
 	public void setBottomBlocks(ArrayList<Block> bottomBlocks) {
 		this.bottomBlocks = bottomBlocks;
 	}
-
-	public ArrayList<Integer> getBuildableIndexes() {
-		return buildableIndexes;
+	
+	public ArrayList<BlockGroup> getBlockGroups() {
+		return blockGroups;
 	}
 
-	public void setBuildableIndexes(ArrayList<Integer> buildableIndexes) {
-		this.buildableIndexes = buildableIndexes;
-	}
-
-	public ArrayList<Integer> getMineralIndexes() {
-		return mineralIndexes;
-	}
-
-	public void setMineralIndexes(ArrayList<Integer> mineralIndexes) {
-		this.mineralIndexes = mineralIndexes;
-	}
-
-	public ArrayList<Integer> getGasIndexes() {
-		return gasIndexes;
-	}
-
-	public void setGasIndexes(ArrayList<Integer> gasIndexes) {
-		this.gasIndexes = gasIndexes;
+	public void setBlockGroups(ArrayList<BlockGroup> blockGroups) {
+		this.blockGroups = blockGroups;
 	}
 
 	public ArrayList<Worker> getWorkers() {
@@ -362,12 +377,12 @@ public class World {
 		this.selectedBlock = selectedBlock;
 	}
 
-	public ArrayList<Integer> getDismantleIndexes() {
-		return dismantleIndexes;
+	public BlockGroup getSelectedBlockGroup() {
+		return selectedBlockGroup;
 	}
 
-	public void setDismantleIndexes(ArrayList<Integer> dismantleIndexes) {
-		this.dismantleIndexes = dismantleIndexes;
+	public void setSelectedBlockGroup(BlockGroup selectedBlockGroup) {
+		this.selectedBlockGroup = selectedBlockGroup;
 	}
 	
 }

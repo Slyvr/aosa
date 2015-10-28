@@ -73,10 +73,11 @@ public class GameInstance {
 			}
 			//Determine what the assignment is on the block
 			if (worker != null){
+				BlockGroup grp = world.getSelectedBlockGroup();
 				Block selected = world.getSelectedBlock();
-				if (selected.getBuilding() != null){
-					if (selected.getBuilding().isCanBeAssigned()){
-						selected.setWorker(worker);
+				if (grp.getBuilding() != null){
+					if (grp.getBuilding().isCanBeAssigned()){
+						grp.setWorker(worker);
 						worker.setSelected(false);
 						world.getWorkers().remove(worker);
 					}
@@ -120,12 +121,12 @@ public class GameInstance {
 				w.setSelected(true);
 			}
 		}
-		for(Block b : world.getBaseBlocks()){
-			if (b.getWorker() != null){
-				if (b.getWorker().getPosBox().overlaps(world.getSummon().getPosBox())){
-					Worker w = b.getWorker();
+		for(BlockGroup grp : world.getBlockGroups()){
+			if (grp.getWorker() != null){
+				if (grp.getWorker().getPosBox().overlaps(world.getSummon().getPosBox())){
+					Worker w = grp.getWorker();
 					world.getWorkers().add(w);
-					b.setWorker(null);
+					grp.setWorker(null);
 					w.setSelected(true);
 				}
 			}
@@ -142,8 +143,8 @@ public class GameInstance {
 			speed = main.getJogSpeed();
 		}
 		if (Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.A)){
-			float leftblockX = world.getBaseBlocks().get(0).getPosBox().getX();
-			float rightblockX = ((this.world.getBaseBlocks().size() * 32)-650);
+			float leftblockX = world.getBlockGroups().get(0).getBlocks().get(0).getPosBox().getX();
+			float rightblockX = (((this.world.getBlockGroups().size() * this.world.getBlockGroups().get(0).getBlocks().size()) * 32)-650);
 			if (leftblockX <= main.getPosBox().getX()){
 				main.getPosBox().setX(main.getPosBox().getX() - speed);
 				world.setSelectedBlock();
@@ -155,8 +156,8 @@ public class GameInstance {
 			}
 		}
 		else if (Gdx.input.isKeyPressed(Keys.RIGHT) || Gdx.input.isKeyPressed(Keys.D)){
-			float leftblockX = world.getBaseBlocks().get(0).getPosBox().getX();
-			float rightblockX = ((this.world.getBaseBlocks().size() * 32)-650);
+			float leftblockX = world.getBlockGroups().get(0).getBlocks().get(0).getPosBox().getX();
+			float rightblockX = (((this.world.getBlockGroups().size() * this.world.getBlockGroups().get(0).getBlocks().size()) * 32)-650);
 			if (main.getPosBox().getX() < rightblockX-32){
 				main.getPosBox().setX(main.getPosBox().getX() + speed);
 				world.setSelectedBlock();
@@ -172,14 +173,15 @@ public class GameInstance {
 	public void moveMap(){
 		if (Gdx.input.isKeyPressed(Keys.LEFT)){
 			//Get leftmost block
-			Block block = world.getBaseBlocks().get(0);
+			Block block = world.getBlockGroups().get(0).getBlocks().get(0);
 			if (block.getPosBox().getX()+650 <= Aosa.getGlobal().getCamera().position.x)
 				Aosa.getGlobal().getCamera().translate(-50, 0, 0);
 		}
 		else if (Gdx.input.isKeyPressed(Keys.RIGHT)){
 			//Get rightmost block
-			Block block = world.getBaseBlocks().get(world.getBaseBlocks().size()-1);
-			if (Aosa.getGlobal().getCamera().position.x < ((this.world.getBaseBlocks().size() * 32)-650)){
+			BlockGroup lastGrp = world.getBlockGroups().get(world.getBlockGroups().size()-1);
+			Block block = lastGrp.getBlocks().get(lastGrp.getBlocks().size()-1);
+			if (Aosa.getGlobal().getCamera().position.x < (((this.world.getBlockGroups().size() * this.world.getBlockGroups().get(0).getBlocks().size()) * 32)-650)){
 				Aosa.getGlobal().getCamera().translate(50, 0, 0);
 			}
 		}
@@ -188,7 +190,10 @@ public class GameInstance {
 	public void updateDebugTooltip(){
 		if (Aosa.getGlobal().getCurrentMenu().getName().equals("game")){
 			Ent debugTooltip = Aosa.getGlobal().getCurrentMenu().getEntByName("debugTooltip");
-			String debugText = "FPS: "+Gdx.graphics.getFramesPerSecond();
+			String debugText = "";
+			debugText += "Minerals: "+Aosa.getGlobal().getGame().getMineralsCollected();
+			debugText += "\nGas: "+Aosa.getGlobal().getGame().getGasCollected();
+			debugText += "\nFPS: "+Gdx.graphics.getFramesPerSecond();
 			debugText += "\nCamX: "+Aosa.getGlobal().getCamera().position.x/32;
 			debugTooltip.setText(debugText);
 		}
@@ -201,9 +206,9 @@ public class GameInstance {
 			if (world.getSelectedBlock() != null) {
 				tooltipText += world.getSelectedBlock().getBlockName();
 				if (world.getSelectedBlock().getOverlandImg() != null) tooltipText += "\n"+world.getSelectedBlock().getOverlandImg().getName();
-				if (world.getSelectedBlock().getBuilding() != null) tooltipText += "\nBuilding: "+world.getSelectedBlock().getBuilding().getName();
-				if (world.getSelectedBlock().getMineralAmt() > 0) tooltipText += "\nMinerals: "+world.getSelectedBlock().getMineralAmt();
-				if (world.getSelectedBlock().getGasAmt() > 0) tooltipText += "\nGas: "+world.getSelectedBlock().getGasAmt();
+				if (world.getSelectedBlockGroup().getBuilding() != null) tooltipText += "\nBuilding: "+world.getSelectedBlockGroup().getBuilding().getName();
+				if (world.getSelectedBlockGroup().getMineralAmt() > 0) tooltipText += "\nMinerals: "+world.getSelectedBlockGroup().getMineralAmt();
+				if (world.getSelectedBlockGroup().getGasAmt() > 0) tooltipText += "\nGas: "+world.getSelectedBlockGroup().getGasAmt();
 			}
 			blockTooltip.setText(tooltipText);
 		}

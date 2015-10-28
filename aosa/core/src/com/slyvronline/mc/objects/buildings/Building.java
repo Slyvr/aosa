@@ -1,8 +1,8 @@
 package com.slyvronline.mc.objects.buildings;
 
 import com.slyvronline.mc.objects.Block;
+import com.slyvronline.mc.objects.BlockGroup;
 import com.slyvronline.mc.objects.Ent;
-import com.slyvronline.mc.objects.characters.Worker;
 
 public abstract class Building extends Ent{
 
@@ -11,12 +11,12 @@ public abstract class Building extends Ent{
 	private boolean canBeAssigned;
 	
 	public Building(){
-		
+		super();
 	}
 	
 	public abstract void update();
 	
-	public abstract void updateWorkerActivity(Block b);
+	public abstract void updateWorkerActivity(BlockGroup grp);
 
 	public int getBlockSize() {
 		return blockSize;
