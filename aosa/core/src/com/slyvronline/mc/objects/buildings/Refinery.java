@@ -15,6 +15,8 @@ public class Refinery extends Building {
 		this.setName("Refinery");
 		this.setCanBeAssigned(true);
 		this.setImg(Aosa.getGlobal().getImgByName("refinery"));
+		this.setMineralCost(100);
+		this.setBuildProgress(1000);
 	}
 
 	@Override
@@ -30,10 +32,22 @@ public class Refinery extends Building {
 			grp.setGasAmt(grp.getGasAmt() - 1);
 			if (grp.getGasAmt() <= 0){
 				this.setCanBeAssigned(false);
+				for(Block b : grp.getBlocks()){
+					if (b.getOverlandImg() != null){
+						if (b.getOverlandImg().getName().equals("gas")){
+							b.setOverlandImg(null);
+						}
+					}
+				}
 				Aosa.getGlobal().getGame().getWorld().getWorkers().add(grp.getWorker());
 				grp.setWorker(null);
 				grp.setBuilding(null);
 			}
 		}
+	}
+
+	@Override
+	public void updateBuildingAction(BlockGroup grp) {
+		
 	}
 }

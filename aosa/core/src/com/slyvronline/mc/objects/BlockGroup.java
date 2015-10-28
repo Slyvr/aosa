@@ -29,15 +29,18 @@ public class BlockGroup {
 		}
 		
 		updateWorker();
+		
+		if (building != null)
+			building.update();
 	}
 	
 	public void render(SpriteBatch batch){
+		if (building!=null)
+			building.render(batch);
+		
 		for(Block b : blocks){
 			b.render(batch);
 		}
-		
-		if (building!=null)
-			building.render(batch);
 		
 		if (worker != null)
 			worker.render(batch);
@@ -73,7 +76,13 @@ public class BlockGroup {
 						}
 					}
 					else if (building != null){
-						if (building.isCanBeAssigned()){
+						if (building.getImg().getName().equals("construct")){
+							building.updateBuildProgress(this);
+						}
+						else if (building.getActionProgress() > 0){
+							building.updateBuildingAction(this);
+						}
+						else if (building.isCanBeAssigned()){
 							building.updateWorkerActivity(this);
 						}
 					}

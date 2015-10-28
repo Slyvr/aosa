@@ -39,6 +39,10 @@ public class GameInstance {
 		paused = false;
 		startGameMillis = System.currentTimeMillis();
 		world = new World();
+		
+		//TESTING
+		mineralsCollected = 1000;
+		gasCollected = 1000;
 	}
 	
 	public void update(){
@@ -46,6 +50,7 @@ public class GameInstance {
 		gameOverCheck();
 		//moveMap();
 		moveMainChar();
+		updateBuild();
 		updateAssignFollowers();
 		updateSummonFollowers();
 		updateBlockTooltip();
@@ -61,28 +66,108 @@ public class GameInstance {
 		boolean gameWin = false;
 	}
 	
+	public void updateBuild(){
+		if (Gdx.input.isKeyJustPressed(Keys.UP) || Gdx.input.isKeyJustPressed(Keys.W)){
+			if (world.getSelectedBlockGroup().isBuildable() && world.getSelectedBlockGroup().getBuilding() == null && world.getWorkers().size() > 0){
+				boolean okToBuild = true;
+				for(Block b : world.getSelectedBlockGroup().getBlocks()){
+					if (b.isBuildable() && b.getDismantleAmt() > 0){
+						okToBuild = false;
+					}
+				}
+				if (okToBuild){
+					Aosa.getGlobal().getCurrentMenu().setCurrentSubMenu(Aosa.getGlobal().getCurrentMenu().getSubMenuByName("build"));
+					//Reset the build menu
+					Menu buildMenu = Aosa.getGlobal().getCurrentMenu().getCurrentSubMenu();
+					for(int i=buildMenu.getEnts().size()-1; i>0; i--){
+						Ent e = buildMenu.getEnts().get(i);
+						if (e.getName().contains("building")){
+							buildMenu.getEnts().remove(e);
+						}
+					}
+					
+					int buildSize=0;
+					for(Block b : world.getSelectedBlockGroup().getBlocks()){
+						if (b.isBuildable()){
+							buildSize++;
+						}
+					}
+					//Determine which buildings to allow to be built here
+					float maxHeight=0;
+					ArrayList<Ent> buildings = new ArrayList<Ent>();
+					if (buildSize == 2){
+						if (world.getSelectedBlockGroup().getMineralAmt() > 0){
+							Ent mine = new Ent();
+							mine.setName("building-mine");
+							mine.setImg(Aosa.getGlobal().getImgByName("mine"));
+							if (mine.getImg().getTex().getHeight() > maxHeight) maxHeight = mine.getImg().getTex().getHeight();
+							buildings.add(mine);
+						}
+						else if (world.getSelectedBlockGroup().getGasAmt() > 0){
+							Ent refinery = new Ent();
+							refinery.setName("building-refinery");
+							refinery.setImg(Aosa.getGlobal().getImgByName("refinery"));
+							if (refinery.getImg().getTex().getHeight() > maxHeight) maxHeight = refinery.getImg().getTex().getHeight();
+							buildings.add(refinery);
+						}
+						else{
+							Ent tower = new Ent();
+							tower.setName("building-tower");
+							tower.setImg(Aosa.getGlobal().getImgByName("tower"));
+							if (tower.getImg().getTex().getHeight() > maxHeight) maxHeight = tower.getImg().getTex().getHeight();
+							buildings.add(tower);
+						}
+					}
+					else if (buildSize == 4){
+						Ent barracks = new Ent();
+						barracks.setName("building-barracks");
+						barracks.setImg(Aosa.getGlobal().getImgByName("barracks"));
+						if (barracks.getImg().getTex().getHeight() > maxHeight) maxHeight = barracks.getImg().getTex().getHeight();
+						buildings.add(barracks);
+					}
+					else if (buildSize == 8){
+						Ent base = new Ent();
+						base.setName("building-base");
+						base.setImg(Aosa.getGlobal().getImgByName("base"));
+						if (base.getImg().getTex().getHeight() > maxHeight) maxHeight = base.getImg().getTex().getHeight();
+						buildings.add(base);
+					}
+					float blackWidth = buildings.size()*32*buildSize + (16*buildings.size()) + 16;
+					Ent blackcover = buildMenu.getEntByName("blackcover");
+					blackcover.setPosBox(new Rectangle(
+							(Gdx.graphics.getWidth()/2)-(blackWidth/2),
+							256,
+							blackWidth,
+							maxHeight+32));
+					float x=blackcover.getPosBox().getX()+16;
+					for(Ent building : buildings){
+						building.setPosBox(new Rectangle(
+								x,
+								256 + 16,
+								building.getImg().getTex().getWidth(),
+								building.getImg().getTex().getHeight()));
+						buildMenu.getEnts().add(building);
+						x+= building.getImg().getTex().getWidth()+16;
+					}
+				}
+			}
+		}
+	}
+	
 	public void updateAssignFollowers(){
 		if (Gdx.input.isKeyJustPressed(Keys.UP) || Gdx.input.isKeyJustPressed(Keys.W)){
 			//Get a worker to assign
-			Worker worker = null;
-			for(Worker w : world.getWorkers()){
-				if (w.isSelected()){
-					worker = w;
-					break;
-				}
-			}
+			Worker worker = world.getAvailableWorker();
 			//Determine what the assignment is on the block
 			if (worker != null){
 				BlockGroup grp = world.getSelectedBlockGroup();
 				Block selected = world.getSelectedBlock();
-				if (grp.getBuilding() != null){
-					if (grp.getBuilding().isCanBeAssigned()){
-						grp.setWorker(worker);
-						worker.setSelected(false);
-						world.getWorkers().remove(worker);
-					}
+				if (grp.getBuilding() != null && grp.getWorker() == null && grp.getBuilding().isCanBeAssigned()){
+					grp.setWorker(worker);
+					worker.setSelected(false);
+					world.getWorkers().remove(worker);
 				}
-				else if (selected.getDismantleAmt() > 0){
+				else if (selected.getDismantleAmt() > 0 && selected.getWorker() == null){
 					selected.setWorker(worker);
 					worker.setSelected(false);
 					world.getWorkers().remove(worker);
@@ -122,6 +207,16 @@ public class GameInstance {
 			}
 		}
 		for(BlockGroup grp : world.getBlockGroups()){
+			for(Block b : grp.getBlocks()){
+				if (b.getWorker() != null){
+					if (b.getWorker().getPosBox().overlaps(world.getSummon().getPosBox())){
+						Worker w = b.getWorker();
+						world.getWorkers().add(w);
+						b.setWorker(null);
+						w.setSelected(true);
+					}
+				}
+			}
 			if (grp.getWorker() != null){
 				if (grp.getWorker().getPosBox().overlaps(world.getSummon().getPosBox())){
 					Worker w = grp.getWorker();
@@ -205,10 +300,22 @@ public class GameInstance {
 			String tooltipText = "";
 			if (world.getSelectedBlock() != null) {
 				tooltipText += world.getSelectedBlock().getBlockName();
-				if (world.getSelectedBlock().getOverlandImg() != null) tooltipText += "\n"+world.getSelectedBlock().getOverlandImg().getName();
-				if (world.getSelectedBlockGroup().getBuilding() != null) tooltipText += "\nBuilding: "+world.getSelectedBlockGroup().getBuilding().getName();
-				if (world.getSelectedBlockGroup().getMineralAmt() > 0) tooltipText += "\nMinerals: "+world.getSelectedBlockGroup().getMineralAmt();
-				if (world.getSelectedBlockGroup().getGasAmt() > 0) tooltipText += "\nGas: "+world.getSelectedBlockGroup().getGasAmt();
+				if (world.getSelectedBlock().getOverlandImg() != null)
+					tooltipText += "\n"+world.getSelectedBlock().getOverlandImg().getName();
+				if (world.getSelectedBlockGroup().getBuilding() != null)
+					tooltipText += "\nBuilding: "+world.getSelectedBlockGroup().getBuilding().getName();
+				if (world.getSelectedBlockGroup().getMineralAmt() > 0)
+					tooltipText += "\nMinerals: "+world.getSelectedBlockGroup().getMineralAmt();
+				if (world.getSelectedBlockGroup().getGasAmt() > 0)
+					tooltipText += "\nGas: "+world.getSelectedBlockGroup().getGasAmt();
+				if (world.getSelectedBlockGroup().getBuilding() != null 
+						&& world.getSelectedBlockGroup().getBuilding().getBuildProgress() > 0)
+					tooltipText += "\nBuildProgress: "+world.getSelectedBlockGroup().getBuilding().getBuildProgress();
+				if (world.getSelectedBlock().getDismantleAmt() > 0)
+					tooltipText += "\nDismantleAmount: "+world.getSelectedBlock().getDismantleAmt();
+				if (world.getSelectedBlockGroup().getBuilding() != null &&
+						world.getSelectedBlockGroup().getBuilding().getActionProgress() > 0)
+					tooltipText += "\nActionProgress: "+world.getSelectedBlockGroup().getBuilding().getActionProgress();
 			}
 			blockTooltip.setText(tooltipText);
 		}

@@ -320,6 +320,15 @@ public class World {
 			}
 		}
 	}
+	
+	public Worker getAvailableWorker(){
+		for(Worker w : workers){
+			if (w.isSelected()){
+				return w;
+			}
+		}
+		return null;
+	}
 
 	public ArrayList<Block> getBottomBlocks() {
 		return bottomBlocks;

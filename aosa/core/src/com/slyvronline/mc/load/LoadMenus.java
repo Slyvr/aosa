@@ -159,6 +159,7 @@ public class LoadMenus {
 		
 		ArrayList<Menu> subMenus = new ArrayList<Menu>();
 		
+		subMenus.add(loadBuildMenu());
 		subMenus.add(loadPauseMenu());
 		subMenus.add(loadOptionsMenu());
 		subMenus.add(loadCreditsMenu());
@@ -313,6 +314,32 @@ public class LoadMenus {
 				btnReturn.getImg().getTex().getWidth(),
 				btnReturn.getImg().getTex().getHeight()));
 		subEnts.add(btnReturn);
+		
+		menu.setEnts(subEnts);
+		
+		return menu;
+	}
+	
+	public static Menu loadBuildMenu(){
+		BuildMenu menu = new BuildMenu();
+		menu.setName("build");
+		
+		ArrayList<Ent> subEnts = new ArrayList<Ent>();
+		
+		Ent whitecover = new Ent();
+		whitecover.setName("whitecover");
+		whitecover.setImg(Aosa.getGlobal().getImgByName("whitecover"));
+		whitecover.setPosBox(new Rectangle(0,0,
+				Gdx.graphics.getWidth(),
+				Gdx.graphics.getHeight()));
+		subEnts.add(whitecover);
+		
+		Ent blackcover = new Ent();
+		blackcover.setName("blackcover");
+		blackcover.setImg(Aosa.getGlobal().getImgByName("whitecover"));
+		blackcover.setPosBox(new Rectangle());
+		blackcover.setColor(Color.BLACK);
+		subEnts.add(blackcover);
 		
 		menu.setEnts(subEnts);
 		

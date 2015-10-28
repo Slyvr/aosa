@@ -45,6 +45,9 @@ data/imgs/minerals.png
 data/imgs/gas.png
 data/imgs/mine.png
 data/imgs/refinery.png
+data/imgs/tower.png
+data/imgs/barracks.png
+data/imgs/construct.png
 data/imgs/skybox.png
 data/imgs/summon.png
 data/imgs/assigned.png

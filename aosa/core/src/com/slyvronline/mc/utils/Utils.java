@@ -18,8 +18,13 @@ public class Utils {
 		return distance;
 	}
 	
-	public static Rectangle getMousePos(){
+	public static Rectangle getGameMousePos(){
 		Vector3 mousePos = Aosa.getGlobal().getCamera().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+		return new Rectangle(mousePos.x, mousePos.y,1,1);
+	}
+	
+	public static Rectangle getMenuMousePos(){
+		Vector3 mousePos = Aosa.getGlobal().getHudCam().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
 		return new Rectangle(mousePos.x, mousePos.y,1,1);
 	}
 }

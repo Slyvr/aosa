@@ -15,6 +15,8 @@ public class Mine extends Building {
 		this.setName("Mine");
 		this.setCanBeAssigned(true);
 		this.setImg(Aosa.getGlobal().getImgByName("mine"));
+		this.setMineralCost(100);
+		this.setBuildProgress(1000);
 	}
 
 	@Override
@@ -30,10 +32,22 @@ public class Mine extends Building {
 			grp.setMineralAmt(grp.getMineralAmt() - 1);
 			if (grp.getMineralAmt() <= 0){
 				this.setCanBeAssigned(false);
+				for(Block b : grp.getBlocks()){
+					if (b.getOverlandImg() != null){
+						if (b.getOverlandImg().getName().equals("minerals")){
+							b.setOverlandImg(null);
+						}
+					}
+				}
 				Aosa.getGlobal().getGame().getWorld().getWorkers().add(grp.getWorker());
 				grp.setWorker(null);
 				grp.setBuilding(null);
 			}
 		}
+	}
+
+	@Override
+	public void updateBuildingAction(BlockGroup grp) {
+		
 	}
 }
