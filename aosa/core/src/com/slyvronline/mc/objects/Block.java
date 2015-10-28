@@ -6,16 +6,51 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.slyvronline.aosa.Aosa;
 import com.slyvronline.mc.objects.buildings.Building;
+import com.slyvronline.mc.objects.characters.Worker;
 
 public class Block extends Ent {
 
 	private String blockName;
 	private boolean buildable;
 	private Building building;
-	private boolean dismantlable;
+	private int dismantleAmt;
 	private int mineralAmt;
 	private int gasAmt;
 	private Img overlandImg;
+	private Worker worker;
+	
+	public void update(){
+		updateWorker();
+	}
+	
+	public void updateWorker(){
+		if (worker != null){
+			if (worker.getPosBox().getWidth() > 1){
+				if (worker.getPosBox().getX() < this.getPosBox().getX()){
+					worker.getPosBox().setX(worker.getPosBox().getX() + worker.getWalkSpeed());
+				}
+				if (worker.getPosBox().getX() > this.getPosBox().getX()){
+					worker.getPosBox().setX(worker.getPosBox().getX() - worker.getWalkSpeed());
+				}
+				if ((worker.getPosBox().getX() <= this.getPosBox().getX()+10) &&
+						(worker.getPosBox().getX() >= this.getPosBox().getX()-10)){
+					if (dismantleAmt > 0){
+						dismantleAmt--;
+						if (dismantleAmt<=0){
+							Aosa.getGlobal().getGame().getWorld().getWorkers().add(worker);
+							worker = null;
+							this.overlandImg = null;
+						}
+					}
+					else if (building != null){
+						if (building.isCanBeAssigned()){
+							building.updateWorkerActivity(this);
+						}
+					}
+				}
+			}
+		}
+	}
 	
 	@Override
 	public void render(SpriteBatch batch){
@@ -60,6 +95,15 @@ public class Block extends Ent {
 							this.getOverlandImg().getTex().getHeight());
 				}
 			}
+			if (this.worker != null){
+				//Draw assigned worker image
+				batch.draw(Aosa.getGlobal().getImgByName("assigned").getTex(),
+						this.getPosBox().getX(),
+						this.getPosBox().getY()+128,
+						Aosa.getGlobal().getImgByName("assigned").getTex().getWidth(),
+						Aosa.getGlobal().getImgByName("assigned").getTex().getHeight());
+				this.worker.render(batch);
+			}
 			if (this.getFont()!=null){
 				this.getFont().getFont().setColor(this.getColor());
 				this.getFont().getFont().draw(batch, this.getText(), this.getPosBox().getX(), this.getPosBox().getY());
@@ -85,6 +129,7 @@ public class Block extends Ent {
 	
 	public void setTree(){
 		this.overlandImg = Aosa.getGlobal().getImgByName("tree");
+		this.dismantleAmt = 1000;
 	}
 	
 	public String getBlockName() {
@@ -105,11 +150,11 @@ public class Block extends Ent {
 	public void setBuilding(Building building) {
 		this.building = building;
 	}
-	public boolean isDismantlable() {
-		return dismantlable;
+	public int getDismantleAmt() {
+		return dismantleAmt;
 	}
-	public void setDismantlable(boolean dismantlable) {
-		this.dismantlable = dismantlable;
+	public void setDismantleAmt(int dismantleAmt) {
+		this.dismantleAmt = dismantleAmt;
 	}
 	public Img getOverlandImg() {
 		return overlandImg;
@@ -128,6 +173,12 @@ public class Block extends Ent {
 	}
 	public void setGasAmt(int gasAmt) {
 		this.gasAmt = gasAmt;
+	}
+	public Worker getWorker() {
+		return worker;
+	}
+	public void setWorker(Worker worker) {
+		this.worker = worker;
 	}
 	
 }

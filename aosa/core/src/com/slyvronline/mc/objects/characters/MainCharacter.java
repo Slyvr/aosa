@@ -5,4 +5,9 @@ public class MainCharacter extends Character {
 	public MainCharacter(){
 		super();
 	}
+
+	@Override
+	public void update() {
+		
+	}
 }

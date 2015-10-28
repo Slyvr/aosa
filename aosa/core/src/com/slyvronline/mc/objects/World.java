@@ -12,19 +12,27 @@ import com.slyvronline.aosa.runnable.WorldGeneratorThread;
 import com.slyvronline.mc.objects.buildings.Base;
 import com.slyvronline.mc.objects.buildings.Mine;
 import com.slyvronline.mc.objects.buildings.Refinery;
+import com.slyvronline.mc.objects.characters.Grunt;
+import com.slyvronline.mc.objects.characters.MainCharacter;
+import com.slyvronline.mc.objects.characters.Worker;
 import com.slyvronline.mc.utils.GameConstants;
 
 public class World {
 	
 	private ArrayList<Block> bottomBlocks;
+	private ArrayList<BlockGroup> blockGroups;
 	private ArrayList<Block> baseBlocks;
 	private ArrayList<Integer> buildableIndexes;
 	private ArrayList<Integer> mineralIndexes;
 	private ArrayList<Integer> gasIndexes;
-	private ArrayList<Ent> buildings;
-	private ArrayList<Ent> workers;
-	private ArrayList<Ent> enemies;
-	private Ent mainChar;
+	private ArrayList<Integer> dismantleIndexes;
+	
+	private Block selectedBlock;
+	
+	private ArrayList<Worker> workers;
+	private ArrayList<Grunt> grunts;
+	private MainCharacter mainChar;
+	private Ent summon;
 	
 	public World(){
 		bottomBlocks = new ArrayList<Block>();
@@ -32,17 +40,29 @@ public class World {
 		buildableIndexes = new ArrayList<Integer>();
 		mineralIndexes = new ArrayList<Integer>();
 		gasIndexes = new ArrayList<Integer>();
-		buildings = new ArrayList<Ent>();
-		workers = new ArrayList<Ent>();
-		enemies = new ArrayList<Ent>();
-		mainChar = new Ent();
+		dismantleIndexes = new ArrayList<Integer>();
+		
+		summon = new Ent();
+		summon.setName("summon");
+		summon.setImg(Aosa.getGlobal().getImgByName("summon"));
+		summon.setPosBox(new Rectangle());
+		
+		setupCharacters();
 		WorldGeneratorThread wgt = new WorldGeneratorThread("thread1");
 		Aosa.getGlobal().setThread(wgt);
 		wgt.start();
 	}
 	
 	public void update(){
+		updateFollowers();
 		
+		for(Worker w : workers){
+			w.update();
+		}
+		
+		for(Block b : baseBlocks){
+			b.update();
+		}
 	}
 	
 	public void render(SpriteBatch batch){
@@ -51,6 +71,59 @@ public class World {
 		}
 		for(Block block : baseBlocks){
 			block.render(batch);
+		}
+		
+		for(Worker w : workers){
+			w.render(batch);
+		}
+		for(Grunt g : grunts){
+			g.render(batch);
+		}
+		mainChar.render(batch);
+		summon.render(batch);
+	}
+	
+	public void updateFollowers(){
+		float mainCharX = (mainChar.getPosBox().getX()-(mainChar.getImg().getTex().getWidth()/2));
+		int numLeft=0;
+		int numRight=0;
+		for(Worker w : workers){
+			if (w.isSelected()){
+				if (w.getPosBox().getX() < mainCharX) numLeft++;
+				if (w.getPosBox().getX() > mainCharX) numRight++;
+				
+				if (w.getPosBox().getX() < (mainCharX-64)-(numLeft*32)){
+					w.getPosBox().setX(w.getPosBox().getX() + w.getWalkSpeed());
+				}
+				if (w.getPosBox().getX() > (mainCharX+64)+(numRight*32)){
+					w.getPosBox().setX(w.getPosBox().getX() - w.getWalkSpeed());
+				}
+			}
+		}
+	}
+	
+	public void setupCharacters(){
+		mainChar = new MainCharacter();
+		mainChar.setName("Main");
+		mainChar.setImg(Aosa.getGlobal().getImgByName("mainchar"));
+		mainChar.setPosBox(new Rectangle(32*(1000)+64,
+				80+32,
+				mainChar.getImg().getTex().getWidth(),
+				mainChar.getImg().getTex().getHeight()));
+		
+		workers = new ArrayList<Worker>();
+		grunts = new ArrayList<Grunt>();
+		
+		for(int i=1; i<4; i++){
+			Worker w = new Worker();
+			w.setName("Worker");
+			w.setId(i);
+			w.setImg(Aosa.getGlobal().getImgByName("worker"));
+			w.setPosBox(new Rectangle(32*(1000)+64 + 32 + (i*w.getImg().getTex().getWidth()),
+					80+32,
+					w.getImg().getTex().getWidth(),
+					w.getImg().getTex().getHeight()));
+			workers.add(w);
 		}
 	}
 	
@@ -121,7 +194,6 @@ public class World {
 				block.setBlockName("Grass");
 				block.setBuildable(false);
 				block.setBuilding(null);
-				block.setDismantlable(false);
 				block.setOverlandImg(null);
 				block.setImg(Aosa.getGlobal().getImgByName("grass"));
 				block.setPosBox(new Rectangle((x+i)*block.getImg().getTex().getWidth(),
@@ -141,6 +213,7 @@ public class World {
 					if (buildSizeCounter < 2){
 						block.setBlockBuildable();
 						block.setBuilding(refinery);
+						block.setGasAmt(1000);
 						buildSizeCounter++;
 					}
 					if (!buildingSet){
@@ -152,6 +225,7 @@ public class World {
 					if (buildSizeCounter >= 6){
 						block.setBlockBuildable();
 						block.setBuilding(mine);
+						block.setMineralAmt(1000);
 						if (!buildingSet){
 							block.setOverlandImg(Aosa.getGlobal().getImgByName("mine"));
 							buildingSet = true;
@@ -189,6 +263,9 @@ public class World {
 			if (b.getGasAmt() > 0){
 				gasIndexes.add(i);
 			}
+			if (b.getDismantleAmt() > 0){
+				dismantleIndexes.add(i);
+			}
 		}
 		
 		Aosa.getGlobal().getCamera().position.x = 32*(baseBlocks.size()/2)+64;
@@ -196,43 +273,101 @@ public class World {
 		//Aosa.getGlobal().getCamera().translate((32*(baseBlocks.size())), 0, 0);
 	}
 	
+	public void setSelectedBlock(){
+		Rectangle charPos = new Rectangle(mainChar.getPosBox().getX()+(mainChar.getImg().getTex().getWidth()/2),80+16,1,1);
+		for(Block b : baseBlocks){
+			if (b.getPosBox().overlaps(charPos)){
+				selectedBlock = b;
+				break;
+			}
+		}
+	}
+	
 	public ArrayList<Block> getBaseBlocks() {
 		return baseBlocks;
 	}
-
 	public void setBaseBlocks(ArrayList<Block> baseBlocks) {
 		this.baseBlocks = baseBlocks;
 	}
 
-	public ArrayList<Ent> getBuildings() {
-		return buildings;
+	public ArrayList<Block> getBottomBlocks() {
+		return bottomBlocks;
 	}
 
-	public void setBuildings(ArrayList<Ent> buildings) {
-		this.buildings = buildings;
+	public void setBottomBlocks(ArrayList<Block> bottomBlocks) {
+		this.bottomBlocks = bottomBlocks;
 	}
 
-	public ArrayList<Ent> getWorkers() {
+	public ArrayList<Integer> getBuildableIndexes() {
+		return buildableIndexes;
+	}
+
+	public void setBuildableIndexes(ArrayList<Integer> buildableIndexes) {
+		this.buildableIndexes = buildableIndexes;
+	}
+
+	public ArrayList<Integer> getMineralIndexes() {
+		return mineralIndexes;
+	}
+
+	public void setMineralIndexes(ArrayList<Integer> mineralIndexes) {
+		this.mineralIndexes = mineralIndexes;
+	}
+
+	public ArrayList<Integer> getGasIndexes() {
+		return gasIndexes;
+	}
+
+	public void setGasIndexes(ArrayList<Integer> gasIndexes) {
+		this.gasIndexes = gasIndexes;
+	}
+
+	public ArrayList<Worker> getWorkers() {
 		return workers;
 	}
 
-	public void setWorkers(ArrayList<Ent> workers) {
+	public void setWorkers(ArrayList<Worker> workers) {
 		this.workers = workers;
 	}
 
-	public ArrayList<Ent> getEnemies() {
-		return enemies;
+	public ArrayList<Grunt> getGrunts() {
+		return grunts;
 	}
 
-	public void setEnemies(ArrayList<Ent> enemies) {
-		this.enemies = enemies;
+	public void setGrunts(ArrayList<Grunt> grunts) {
+		this.grunts = grunts;
 	}
 
-	public Ent getMainChar() {
+	public MainCharacter getMainChar() {
 		return mainChar;
 	}
 
-	public void setMainChar(Ent mainChar) {
+	public void setMainChar(MainCharacter mainChar) {
 		this.mainChar = mainChar;
 	}
+
+	public Ent getSummon() {
+		return summon;
+	}
+
+	public void setSummon(Ent summon) {
+		this.summon = summon;
+	}
+
+	public Block getSelectedBlock() {
+		return selectedBlock;
+	}
+
+	public void setSelectedBlock(Block selectedBlock) {
+		this.selectedBlock = selectedBlock;
+	}
+
+	public ArrayList<Integer> getDismantleIndexes() {
+		return dismantleIndexes;
+	}
+
+	public void setDismantleIndexes(ArrayList<Integer> dismantleIndexes) {
+		this.dismantleIndexes = dismantleIndexes;
+	}
+	
 }

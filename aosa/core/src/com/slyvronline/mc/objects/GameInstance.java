@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.slyvronline.aosa.Aosa;
+import com.slyvronline.mc.objects.characters.MainCharacter;
+import com.slyvronline.mc.objects.characters.Worker;
 import com.slyvronline.mc.objects.menus.GameMenu;
 import com.slyvronline.mc.utils.Utils;
 
@@ -42,7 +44,10 @@ public class GameInstance {
 	public void update(){
 		world.update();
 		gameOverCheck();
-		moveMap();
+		//moveMap();
+		moveMainChar();
+		updateAssignFollowers();
+		updateSummonFollowers();
 		updateBlockTooltip();
 		updateDebugTooltip();
 	}
@@ -54,6 +59,114 @@ public class GameInstance {
 	public void gameOverCheck(){
 		boolean gameOver = false;
 		boolean gameWin = false;
+	}
+	
+	public void updateAssignFollowers(){
+		if (Gdx.input.isKeyJustPressed(Keys.UP) || Gdx.input.isKeyJustPressed(Keys.W)){
+			//Get a worker to assign
+			Worker worker = null;
+			for(Worker w : world.getWorkers()){
+				if (w.isSelected()){
+					worker = w;
+					break;
+				}
+			}
+			//Determine what the assignment is on the block
+			if (worker != null){
+				Block selected = world.getSelectedBlock();
+				if (selected.getBuilding() != null){
+					if (selected.getBuilding().isCanBeAssigned()){
+						selected.setWorker(worker);
+						worker.setSelected(false);
+						world.getWorkers().remove(worker);
+					}
+				}
+				else if (selected.getDismantleAmt() > 0){
+					selected.setWorker(worker);
+					worker.setSelected(false);
+					world.getWorkers().remove(worker);
+				}
+			}
+		}
+	}
+	
+	float elapsedSummonTime;
+	float elapsedTotalTime;
+	public void updateSummonFollowers(){
+		if ((Gdx.input.isKeyPressed(Keys.DOWN) || Gdx.input.isKeyPressed(Keys.S)) && elapsedTotalTime < 80){
+			world.getSummon().setPosBox(new Rectangle(
+					(world.getMainChar().getPosBox().getX() + world.getMainChar().getImg().getTex().getWidth()/2) - (elapsedSummonTime/2),
+					80+32,
+					elapsedSummonTime,
+					32));
+			if (elapsedSummonTime <= 128){
+				elapsedSummonTime+=10;
+			}
+			elapsedTotalTime++;
+		}
+		else if ((Gdx.input.isKeyPressed(Keys.DOWN) || Gdx.input.isKeyPressed(Keys.S)) && elapsedTotalTime >= 80){
+			elapsedSummonTime=0;
+			world.getSummon().setPosBox(new Rectangle());
+			elapsedTotalTime++;
+		}
+		else{
+			elapsedSummonTime=0;
+			elapsedTotalTime=0;
+			world.getSummon().setPosBox(new Rectangle());
+		}
+		
+		for(Worker w : world.getWorkers()){
+			if (w.getPosBox().overlaps(world.getSummon().getPosBox())){
+				w.setSelected(true);
+			}
+		}
+		for(Block b : world.getBaseBlocks()){
+			if (b.getWorker() != null){
+				if (b.getWorker().getPosBox().overlaps(world.getSummon().getPosBox())){
+					Worker w = b.getWorker();
+					world.getWorkers().add(w);
+					b.setWorker(null);
+					w.setSelected(true);
+				}
+			}
+		}
+	}
+	
+	public void moveMainChar(){
+		MainCharacter main = world.getMainChar();
+		int speed = 1;
+		if (Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT) || Gdx.input.isKeyPressed(Keys.SHIFT_LEFT)){
+			speed = main.getRunSpeed();
+		}
+		else{
+			speed = main.getJogSpeed();
+		}
+		if (Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.A)){
+			float leftblockX = world.getBaseBlocks().get(0).getPosBox().getX();
+			float rightblockX = ((this.world.getBaseBlocks().size() * 32)-650);
+			if (leftblockX <= main.getPosBox().getX()){
+				main.getPosBox().setX(main.getPosBox().getX() - speed);
+				world.setSelectedBlock();
+				if (leftblockX+650 <= Aosa.getGlobal().getCamera().position.x){
+					if (main.getPosBox().getX() < rightblockX-650){
+						Aosa.getGlobal().getCamera().position.x = main.getPosBox().getX();
+					}
+				}
+			}
+		}
+		else if (Gdx.input.isKeyPressed(Keys.RIGHT) || Gdx.input.isKeyPressed(Keys.D)){
+			float leftblockX = world.getBaseBlocks().get(0).getPosBox().getX();
+			float rightblockX = ((this.world.getBaseBlocks().size() * 32)-650);
+			if (main.getPosBox().getX() < rightblockX-32){
+				main.getPosBox().setX(main.getPosBox().getX() + speed);
+				world.setSelectedBlock();
+				if (Aosa.getGlobal().getCamera().position.x < rightblockX-650){
+					if (main.getPosBox().getX() > leftblockX+650){
+						Aosa.getGlobal().getCamera().position.x = main.getPosBox().getX();
+					}
+				}
+			}
+		}
 	}
 	
 	public void moveMap(){
@@ -82,25 +195,17 @@ public class GameInstance {
 	}
 	
 	public void updateBlockTooltip(){
-		boolean overlapping = false;
 		if (Aosa.getGlobal().getCurrentMenu().getName().equals("game")){
 			Ent blockTooltip = Aosa.getGlobal().getCurrentMenu().getEntByName("blockTooltip");
-			for(Block block : this.world.getBaseBlocks()){
-				Rectangle mousePos = Utils.getMousePos();
-				//System.out.println(mousePos.x+" , "+mousePos.y);
-				if (mousePos.overlaps(block.getPosBox())){
-					String tooltipText = block.getBlockName();
-					if (block.getOverlandImg() != null) tooltipText += "\n"+block.getOverlandImg().getName();
-					if (block.getBuilding() != null) tooltipText += "\nBuilding: "+block.getBuilding().getName();
-					if (block.getMineralAmt() > 0) tooltipText += "\nMinerals: "+block.getMineralAmt();
-					if (block.getGasAmt() > 0) tooltipText += "\nGas: "+block.getGasAmt();
-					blockTooltip.setText(tooltipText);
-					overlapping=true;
-				}
+			String tooltipText = "";
+			if (world.getSelectedBlock() != null) {
+				tooltipText += world.getSelectedBlock().getBlockName();
+				if (world.getSelectedBlock().getOverlandImg() != null) tooltipText += "\n"+world.getSelectedBlock().getOverlandImg().getName();
+				if (world.getSelectedBlock().getBuilding() != null) tooltipText += "\nBuilding: "+world.getSelectedBlock().getBuilding().getName();
+				if (world.getSelectedBlock().getMineralAmt() > 0) tooltipText += "\nMinerals: "+world.getSelectedBlock().getMineralAmt();
+				if (world.getSelectedBlock().getGasAmt() > 0) tooltipText += "\nGas: "+world.getSelectedBlock().getGasAmt();
 			}
-			if (!overlapping){
-				blockTooltip.setText("");
-			}
+			blockTooltip.setText(tooltipText);
 		}
 	}
 	

@@ -46,3 +46,8 @@ data/imgs/gas.png
 data/imgs/mine.png
 data/imgs/refinery.png
 data/imgs/skybox.png
+data/imgs/summon.png
+data/imgs/assigned.png
+data/characters/mainchar.png
+data/characters/worker.png
+data/characters/grunt.png
