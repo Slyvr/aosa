@@ -190,7 +190,7 @@ public class GameInstance {
 	float elapsedTotalTime;
 	public void updateSummonFollowers(){
 		if ((Gdx.input.isKeyJustPressed(Keys.DOWN) || Gdx.input.isKeyJustPressed(Keys.S)) && elapsedTotalTime < 80){
-			Aosa.getGlobal().getSoundByName("call").getSound().play();
+			Aosa.getGlobal().getSoundByName("whistle").getSound().play();
 		}
 		if ((Gdx.input.isKeyPressed(Keys.DOWN) || Gdx.input.isKeyPressed(Keys.S)) && elapsedTotalTime < 80){
 			world.getSummon().setPosBox(new Rectangle(
@@ -209,6 +209,7 @@ public class GameInstance {
 			elapsedTotalTime++;
 		}
 		else{
+			Aosa.getGlobal().getSoundByName("whistle").getSound().stop();
 			elapsedSummonTime=0;
 			elapsedTotalTime=0;
 			world.getSummon().setPosBox(new Rectangle());

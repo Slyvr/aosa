@@ -51,6 +51,8 @@ data/imgs/construct.png
 data/imgs/skybox.png
 data/imgs/summon.png
 data/imgs/assigned.png
+data/imgs/enemyspawn1.png
+data/imgs/enemyspawn2.png
 data/characters/mainchar.png
 data/characters/worker.png
 data/characters/grunt.png

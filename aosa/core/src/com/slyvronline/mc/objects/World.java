@@ -32,6 +32,8 @@ public class World {
 	private ArrayList<Grunt> grunts;
 	private MainCharacter mainChar;
 	private Ent summon;
+	private Ent enemySpawn1;
+	private Ent enemySpawn2;
 	private int worldSize = 1000;
 	
 	public World(){
@@ -42,6 +44,22 @@ public class World {
 		summon.setName("summon");
 		summon.setImg(Aosa.getGlobal().getImgByName("summon"));
 		summon.setPosBox(new Rectangle());
+		
+		enemySpawn1 = new Ent();
+		enemySpawn1.setName("enemySpawn1");
+		enemySpawn1.setImg(Aosa.getGlobal().getImgByName("enemyspawn1"));
+		enemySpawn1.setPosBox(new Rectangle(0,0,
+				enemySpawn1.getImg().getTex().getWidth(),
+				enemySpawn1.getImg().getTex().getHeight()));
+		
+		enemySpawn2 = new Ent();
+		enemySpawn2.setName("enemySpawn2");
+		enemySpawn2.setImg(Aosa.getGlobal().getImgByName("enemyspawn2"));
+		float rightblockX = (worldSize * 32 - 650 );
+		enemySpawn2.setPosBox(new Rectangle(rightblockX-enemySpawn2.getImg().getTex().getWidth(),
+				0,
+				enemySpawn2.getImg().getTex().getWidth(),
+				enemySpawn2.getImg().getTex().getHeight()));
 		
 		setupCharacters();
 		WorldGeneratorThread wgt = new WorldGeneratorThread("thread1");
@@ -79,6 +97,8 @@ public class World {
 			g.render(batch);
 		}
 		mainChar.render(batch);
+		enemySpawn1.render(batch);
+		enemySpawn2.render(batch);
 		summon.render(batch);
 	}
 	
