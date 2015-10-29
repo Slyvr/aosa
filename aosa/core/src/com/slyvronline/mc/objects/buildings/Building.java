@@ -11,7 +11,6 @@ public abstract class Building extends Ent{
 
 	private int blockSize;
 	private int level;
-	private boolean canBeAssigned;
 	private int mineralCost;
 	private int gasCost;
 	private int buildProgress;
@@ -33,8 +32,8 @@ public abstract class Building extends Ent{
 		if (Gdx.input.isKeyJustPressed(Keys.UP) || Gdx.input.isKeyJustPressed(Keys.W)){
 			//If starting action when player is on this building, execute action
 			BlockGroup grp = Aosa.getGlobal().getGame().getWorld().getSelectedBlockGroup();
-			if (grp.getBuilding() != null){
-				if (grp.getBuilding().equals(this)){
+			if (grp.getBuilding() != null && grp.getWorker() == null){
+				if (grp.getBuilding().equals(this) && !this.getName().equals("Tower")){
 					//Execute action of Base
 					Worker worker = Aosa.getGlobal().getGame().getWorld().getAvailableWorker();
 					if (worker != null){
@@ -101,14 +100,6 @@ public abstract class Building extends Ent{
 
 	public void setLevel(int level) {
 		this.level = level;
-	}
-
-	public boolean isCanBeAssigned() {
-		return canBeAssigned;
-	}
-
-	public void setCanBeAssigned(boolean canBeAssigned) {
-		this.canBeAssigned = canBeAssigned;
 	}
 
 	public int getMineralCost() {

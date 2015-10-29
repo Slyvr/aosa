@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.slyvronline.aosa.Aosa;
 import com.slyvronline.mc.objects.characters.MainCharacter;
+import com.slyvronline.mc.objects.characters.Soldier;
 import com.slyvronline.mc.objects.characters.Worker;
 import com.slyvronline.mc.objects.menus.GameMenu;
 import com.slyvronline.mc.utils.Utils;
@@ -158,19 +159,28 @@ public class GameInstance {
 		if (Gdx.input.isKeyJustPressed(Keys.UP) || Gdx.input.isKeyJustPressed(Keys.W)){
 			//Get a worker to assign
 			Worker worker = world.getAvailableWorker();
+			Soldier soldier = world.getAvailableSoldier();
 			//Determine what the assignment is on the block
 			if (worker != null){
 				BlockGroup grp = world.getSelectedBlockGroup();
 				Block selected = world.getSelectedBlock();
-				if (grp.getBuilding() != null && grp.getWorker() == null && grp.getBuilding().isCanBeAssigned()){
+				/*if (grp.getBuilding() != null && grp.getWorker() == null && !grp.getBuilding().getName().equals("Tower")){
 					grp.setWorker(worker);
 					worker.setSelected(false);
 					world.getWorkers().remove(worker);
 				}
-				else if (selected.getDismantleAmt() > 0 && selected.getWorker() == null){
+				else */if (selected.getDismantleAmt() > 0 && selected.getWorker() == null){
 					selected.setWorker(worker);
 					worker.setSelected(false);
 					world.getWorkers().remove(worker);
+				}
+			}
+			if (soldier != null){
+				BlockGroup grp = world.getSelectedBlockGroup();
+				if (grp.getBuilding() != null && grp.getBuilding().getName().equals("Tower")){
+					soldier.setSelected(false);
+					grp.getSoldiers().add(soldier);
+					world.getSoldiers().remove(soldier);
 				}
 			}
 		}
@@ -179,6 +189,9 @@ public class GameInstance {
 	float elapsedSummonTime;
 	float elapsedTotalTime;
 	public void updateSummonFollowers(){
+		if ((Gdx.input.isKeyJustPressed(Keys.DOWN) || Gdx.input.isKeyJustPressed(Keys.S)) && elapsedTotalTime < 80){
+			Aosa.getGlobal().getSoundByName("call").getSound().play();
+		}
 		if ((Gdx.input.isKeyPressed(Keys.DOWN) || Gdx.input.isKeyPressed(Keys.S)) && elapsedTotalTime < 80){
 			world.getSummon().setPosBox(new Rectangle(
 					(world.getMainChar().getPosBox().getX() + world.getMainChar().getImg().getTex().getWidth()/2) - (elapsedSummonTime/2),
@@ -206,6 +219,11 @@ public class GameInstance {
 				w.setSelected(true);
 			}
 		}
+		for(Soldier s : world.getSoldiers()){
+			if (s.getPosBox().overlaps(world.getSummon().getPosBox())){
+				s.setSelected(true);
+			}
+		}
 		for(BlockGroup grp : world.getBlockGroups()){
 			for(Block b : grp.getBlocks()){
 				if (b.getWorker() != null){
@@ -223,6 +241,19 @@ public class GameInstance {
 					world.getWorkers().add(w);
 					grp.setWorker(null);
 					w.setSelected(true);
+					grp.getBuilding().setActionProgress(0);
+				}
+			}
+			if (grp.getSoldiers().size() > 0){
+				for(int i=grp.getSoldiers().size()-1; i>=0; i--){
+					Soldier s = grp.getSoldiers().get(i);
+					if (new Rectangle(s.getPosBox().getX(),80+32,32,32).overlaps(world.getSummon().getPosBox())){
+						s.setSelected(true);
+						s.getPosBox().setY(80+32);
+						world.getSoldiers().add(s);
+						grp.getSoldiers().remove(i);
+						grp.getBuilding().setActionProgress(0);
+					}
 				}
 			}
 		}

@@ -14,8 +14,10 @@ import com.slyvronline.mc.objects.buildings.Mine;
 import com.slyvronline.mc.objects.buildings.Refinery;
 import com.slyvronline.mc.objects.characters.Grunt;
 import com.slyvronline.mc.objects.characters.MainCharacter;
+import com.slyvronline.mc.objects.characters.Soldier;
 import com.slyvronline.mc.objects.characters.Worker;
 import com.slyvronline.mc.utils.GameConstants;
+import com.slyvronline.mc.utils.Utils;
 
 public class World {
 	
@@ -26,6 +28,7 @@ public class World {
 	private BlockGroup selectedBlockGroup;
 	
 	private ArrayList<Worker> workers;
+	private ArrayList<Soldier> soldiers;
 	private ArrayList<Grunt> grunts;
 	private MainCharacter mainChar;
 	private Ent summon;
@@ -69,6 +72,9 @@ public class World {
 		for(Worker w : workers){
 			w.render(batch);
 		}
+		for(Soldier s : soldiers){
+			s.render(batch);
+		}
 		for(Grunt g : grunts){
 			g.render(batch);
 		}
@@ -80,16 +86,33 @@ public class World {
 		float mainCharX = (mainChar.getPosBox().getX()-(mainChar.getImg().getTex().getWidth()/2));
 		int numLeft=0;
 		int numRight=0;
+		for(Soldier s : soldiers){
+			if (s.isSelected()){
+				if (s.getPosBox().getX() < mainCharX) numLeft++;
+				if (s.getPosBox().getX() > mainCharX) numRight++;
+				
+				int speed = s.getWalkSpeed();
+				
+				if (s.getPosBox().getX() < (mainCharX-64)-(numLeft*32)){
+					s.getPosBox().setX(s.getPosBox().getX() + speed);
+				}
+				if (s.getPosBox().getX() > (mainCharX+64)+(numRight*32)){
+					s.getPosBox().setX(s.getPosBox().getX() - speed);
+				}
+			}
+		}
 		for(Worker w : workers){
 			if (w.isSelected()){
 				if (w.getPosBox().getX() < mainCharX) numLeft++;
 				if (w.getPosBox().getX() > mainCharX) numRight++;
 				
+				int speed = w.getWalkSpeed();
+				
 				if (w.getPosBox().getX() < (mainCharX-64)-(numLeft*32)){
-					w.getPosBox().setX(w.getPosBox().getX() + w.getWalkSpeed());
+					w.getPosBox().setX(w.getPosBox().getX() + speed);
 				}
 				if (w.getPosBox().getX() > (mainCharX+64)+(numRight*32)){
-					w.getPosBox().setX(w.getPosBox().getX() - w.getWalkSpeed());
+					w.getPosBox().setX(w.getPosBox().getX() - speed);
 				}
 			}
 		}
@@ -105,6 +128,7 @@ public class World {
 				mainChar.getImg().getTex().getHeight()));
 		
 		workers = new ArrayList<Worker>();
+		soldiers = new ArrayList<Soldier>();
 		grunts = new ArrayList<Grunt>();
 		
 		for(int i=1; i<4; i++){
@@ -143,8 +167,11 @@ public class World {
 		}
 		
 		Base base = new Base();
+		base.setBuildProgress(0);
 		Mine mine = new Mine();
+		mine.setBuildProgress(0);
 		Refinery refinery = new Refinery();
+		refinery.setBuildProgress(0);
 		
 		//Build baseBlocks
 		int groupIdCounter=0;
@@ -250,6 +277,9 @@ public class World {
 						}
 						block.setBlockBuildable();
 						buildSizeCounter++;
+						if (block.getPosBox().getX() >= 32*(worldSize/2)+64 && selectedBlock == null){
+							selectedBlock = block;
+						}
 					}
 				}
 				else if (mainGas){
@@ -301,6 +331,7 @@ public class World {
 				
 				grp.getBlocks().add(block);
 			}
+			selectedBlockGroup = grp;
 			blockGroups.add(grp);
 		}
 		
@@ -331,6 +362,15 @@ public class World {
 		for(Worker w : workers){
 			if (w.isSelected()){
 				return w;
+			}
+		}
+		return null;
+	}
+	
+	public Soldier getAvailableSoldier(){
+		for(Soldier s : soldiers){
+			if (s.isSelected()){
+				return s;
 			}
 		}
 		return null;
@@ -398,6 +438,22 @@ public class World {
 
 	public void setSelectedBlockGroup(BlockGroup selectedBlockGroup) {
 		this.selectedBlockGroup = selectedBlockGroup;
+	}
+
+	public ArrayList<Soldier> getSoldiers() {
+		return soldiers;
+	}
+
+	public void setSoldiers(ArrayList<Soldier> soldiers) {
+		this.soldiers = soldiers;
+	}
+
+	public int getWorldSize() {
+		return worldSize;
+	}
+
+	public void setWorldSize(int worldSize) {
+		this.worldSize = worldSize;
 	}
 	
 }

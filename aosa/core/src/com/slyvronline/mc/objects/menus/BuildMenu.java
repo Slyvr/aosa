@@ -59,7 +59,8 @@ public class BuildMenu extends Menu {
 		if (type.equals("mine")){
 			Mine mine = new Mine();
 			mine.setImg(Aosa.getGlobal().getImgByName("construct"));
-			if (mineralsCollected >= mine.getMineralCost() && gasCollected >= mine.getGasCost()){
+			Worker worker = Aosa.getGlobal().getGame().getWorld().getAvailableWorker();
+			if (mineralsCollected >= mine.getMineralCost() && gasCollected >= mine.getGasCost() && worker != null){
 				Aosa.getGlobal().getSoundByName("click").getSound().play();
 				Aosa.getGlobal().getGame().setMineralsCollected(mineralsCollected - mine.getMineralCost());
 				Aosa.getGlobal().getGame().setGasCollected(gasCollected - mine.getGasCost());
@@ -80,7 +81,6 @@ public class BuildMenu extends Menu {
 						Aosa.getGlobal().getImgByName("mine").getTex().getWidth(),
 						Aosa.getGlobal().getImgByName("mine").getTex().getHeight()));
 				grp.setBuilding(mine);
-				Worker worker = Aosa.getGlobal().getGame().getWorld().getAvailableWorker();
 				worker.setSelected(false);
 				grp.setWorker(worker);
 				Aosa.getGlobal().getGame().getWorld().getWorkers().remove(worker);
@@ -93,7 +93,8 @@ public class BuildMenu extends Menu {
 		else if (type.equals("refinery")){
 			Refinery refinery = new Refinery();
 			refinery.setImg(Aosa.getGlobal().getImgByName("construct"));
-			if (mineralsCollected >= refinery.getMineralCost() && gasCollected >= refinery.getGasCost()){
+			Worker worker = Aosa.getGlobal().getGame().getWorld().getAvailableWorker();
+			if (mineralsCollected >= refinery.getMineralCost() && gasCollected >= refinery.getGasCost() && worker != null){
 				Aosa.getGlobal().getSoundByName("click").getSound().play();
 				Aosa.getGlobal().getGame().setMineralsCollected(mineralsCollected - refinery.getMineralCost());
 				Aosa.getGlobal().getGame().setGasCollected(gasCollected - refinery.getGasCost());
@@ -114,7 +115,6 @@ public class BuildMenu extends Menu {
 						Aosa.getGlobal().getImgByName("refinery").getTex().getWidth(),
 						Aosa.getGlobal().getImgByName("refinery").getTex().getHeight()));
 				grp.setBuilding(refinery);
-				Worker worker = Aosa.getGlobal().getGame().getWorld().getAvailableWorker();
 				worker.setSelected(false);
 				grp.setWorker(worker);
 				Aosa.getGlobal().getGame().getWorld().getWorkers().remove(worker);
@@ -127,7 +127,8 @@ public class BuildMenu extends Menu {
 		else if (type.equals("tower")){
 			Tower tower = new Tower();
 			tower.setImg(Aosa.getGlobal().getImgByName("construct"));
-			if (mineralsCollected >= tower.getMineralCost() && gasCollected >= tower.getGasCost()){
+			Worker worker = Aosa.getGlobal().getGame().getWorld().getAvailableWorker();
+			if (mineralsCollected >= tower.getMineralCost() && gasCollected >= tower.getGasCost() && worker != null){
 				Aosa.getGlobal().getSoundByName("click").getSound().play();
 				Aosa.getGlobal().getGame().setMineralsCollected(mineralsCollected - tower.getMineralCost());
 				Aosa.getGlobal().getGame().setGasCollected(gasCollected - tower.getGasCost());
@@ -145,7 +146,6 @@ public class BuildMenu extends Menu {
 						Aosa.getGlobal().getImgByName("tower").getTex().getWidth(),
 						Aosa.getGlobal().getImgByName("tower").getTex().getHeight()));
 				grp.setBuilding(tower);
-				Worker worker = Aosa.getGlobal().getGame().getWorld().getAvailableWorker();
 				worker.setSelected(false);
 				grp.setWorker(worker);
 				Aosa.getGlobal().getGame().getWorld().getWorkers().remove(worker);
@@ -158,7 +158,8 @@ public class BuildMenu extends Menu {
 		else if (type.equals("barracks")){
 			Barracks barracks = new Barracks();
 			barracks.setImg(Aosa.getGlobal().getImgByName("construct"));
-			if (mineralsCollected >= barracks.getMineralCost() && gasCollected >= barracks.getGasCost()){
+			Worker worker = Aosa.getGlobal().getGame().getWorld().getAvailableWorker();
+			if (mineralsCollected >= barracks.getMineralCost() && gasCollected >= barracks.getGasCost() && worker != null){
 				Aosa.getGlobal().getSoundByName("click").getSound().play();
 				Aosa.getGlobal().getGame().setMineralsCollected(mineralsCollected - barracks.getMineralCost());
 				Aosa.getGlobal().getGame().setGasCollected(gasCollected - barracks.getGasCost());
@@ -176,7 +177,6 @@ public class BuildMenu extends Menu {
 						Aosa.getGlobal().getImgByName("barracks").getTex().getWidth(),
 						Aosa.getGlobal().getImgByName("barracks").getTex().getHeight()));
 				grp.setBuilding(barracks);
-				Worker worker = Aosa.getGlobal().getGame().getWorld().getAvailableWorker();
 				worker.setSelected(false);
 				grp.setWorker(worker);
 				Aosa.getGlobal().getGame().getWorld().getWorkers().remove(worker);
@@ -189,7 +189,8 @@ public class BuildMenu extends Menu {
 		else if (type.equals("base")){
 			Base base = new Base();
 			base.setImg(Aosa.getGlobal().getImgByName("construct"));
-			if (mineralsCollected >= base.getMineralCost() && gasCollected >= base.getGasCost()){
+			Worker worker = Aosa.getGlobal().getGame().getWorld().getAvailableWorker();
+			if (mineralsCollected >= base.getMineralCost() && gasCollected >= base.getGasCost() && worker != null){
 				Aosa.getGlobal().getSoundByName("click").getSound().play();
 				Aosa.getGlobal().getGame().setMineralsCollected(mineralsCollected - base.getMineralCost());
 				Aosa.getGlobal().getGame().setGasCollected(gasCollected - base.getGasCost());
@@ -207,7 +208,6 @@ public class BuildMenu extends Menu {
 						Aosa.getGlobal().getImgByName("base").getTex().getWidth(),
 						Aosa.getGlobal().getImgByName("base").getTex().getHeight()));
 				grp.setBuilding(base);
-				Worker worker = Aosa.getGlobal().getGame().getWorld().getAvailableWorker();
 				worker.setSelected(false);
 				grp.setWorker(worker);
 				Aosa.getGlobal().getGame().getWorld().getWorkers().remove(worker);

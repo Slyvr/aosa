@@ -11,7 +11,6 @@ public class Tower extends Building{
 		this.setBlockSize(2);
 		this.setName("Tower");
 		this.setImg(Aosa.getGlobal().getImgByName("tower"));
-		this.setCanBeAssigned(true);
 		this.setMineralCost(100);
 		this.setBuildProgress(1000);
 	}

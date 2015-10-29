@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.slyvronline.aosa.Aosa;
 import com.slyvronline.mc.objects.Block;
 import com.slyvronline.mc.objects.BlockGroup;
+import com.slyvronline.mc.objects.characters.Soldier;
 import com.slyvronline.mc.objects.characters.Worker;
 
 public class Barracks extends Building {
@@ -35,11 +36,12 @@ public class Barracks extends Building {
 		this.setActionProgress(this.getActionProgress() - 1);
 		if (this.getActionProgress() <= 0){
 			//Action executes
-			ArrayList<Worker> workers = Aosa.getGlobal().getGame().getWorld().getWorkers();
-			grp.getWorker().setSelected(false);
-			workers.add(grp.getWorker());
+			Soldier s = new Soldier();
+			s.setName("Soldier");
+			s.setImg(Aosa.getGlobal().getImgByName("soldier"));
+			s.setPosBox(new Rectangle(grp.getWorker().getPosBox()));
+			Aosa.getGlobal().getGame().getWorld().getSoldiers().add(s);
 			grp.setWorker(null);
-			Aosa.getGlobal().getGame().getWorld().setWorkers(workers);
 		}
 	}
 }

@@ -54,3 +54,4 @@ data/imgs/assigned.png
 data/characters/mainchar.png
 data/characters/worker.png
 data/characters/grunt.png
+data/characters/soldier.png

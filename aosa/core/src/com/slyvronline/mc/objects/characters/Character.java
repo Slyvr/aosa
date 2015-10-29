@@ -9,8 +9,8 @@ public abstract class Character extends Ent {
 	private int runSpeed;
 	
 	public Character(){
-		walkSpeed = 3;
-		jogSpeed = 5;
+		walkSpeed = 5;
+		jogSpeed = 8;
 		runSpeed = 10;
 	}
 	

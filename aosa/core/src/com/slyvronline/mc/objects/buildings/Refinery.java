@@ -2,9 +2,12 @@ package com.slyvronline.mc.objects.buildings;
 
 import java.util.Random;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.slyvronline.aosa.Aosa;
 import com.slyvronline.mc.objects.Block;
 import com.slyvronline.mc.objects.BlockGroup;
+import com.slyvronline.mc.objects.characters.Worker;
 import com.slyvronline.mc.utils.GameConstants;
 
 public class Refinery extends Building {
@@ -13,7 +16,6 @@ public class Refinery extends Building {
 		super();
 		this.setBlockSize(2);
 		this.setName("Refinery");
-		this.setCanBeAssigned(true);
 		this.setImg(Aosa.getGlobal().getImgByName("refinery"));
 		this.setMineralCost(100);
 		this.setBuildProgress(1000);
@@ -21,7 +23,35 @@ public class Refinery extends Building {
 
 	@Override
 	public void update() {
-		
+		updateActionStart();
+	}
+	
+	public void updateActionStart(){
+		if (Gdx.input.isKeyJustPressed(Keys.UP) || Gdx.input.isKeyJustPressed(Keys.W)){
+			//If starting action when player is on this building, execute action
+			BlockGroup grp = Aosa.getGlobal().getGame().getWorld().getSelectedBlockGroup();
+			if (grp.getBuilding() != null && grp.getWorker() == null){
+				if (grp.getBuilding().equals(this) && !this.getName().equals("Tower")){
+					//Execute action of Base
+					Worker worker = Aosa.getGlobal().getGame().getWorld().getAvailableWorker();
+					if (worker != null){
+						int mineralsCollected = Aosa.getGlobal().getGame().getMineralsCollected();
+						int gasCollected = Aosa.getGlobal().getGame().getGasCollected();
+						if (mineralsCollected >= this.getActionMineralCost() &&
+								gasCollected >= this.getActionGasCost()){
+							Aosa.getGlobal().getGame().setGasCollected(gasCollected - this.getActionGasCost());
+							Aosa.getGlobal().getGame().setMineralsCollected(mineralsCollected - this.getActionMineralCost());
+							Aosa.getGlobal().getSoundByName("click").getSound().play();
+							grp.setWorker(worker);
+							Aosa.getGlobal().getGame().getWorld().getWorkers().remove(worker);
+						}
+						else{
+							Aosa.getGlobal().getSoundByName("error").getSound().play();
+						}
+					}
+				}
+			}
+		}
 	}
 
 	@Override
@@ -31,7 +61,6 @@ public class Refinery extends Building {
 			Aosa.getGlobal().getGame().setGasCollected(Aosa.getGlobal().getGame().getGasCollected() + 1);
 			grp.setGasAmt(grp.getGasAmt() - 1);
 			if (grp.getGasAmt() <= 0){
-				this.setCanBeAssigned(false);
 				for(Block b : grp.getBlocks()){
 					if (b.getOverlandImg() != null){
 						if (b.getOverlandImg().getName().equals("gas")){

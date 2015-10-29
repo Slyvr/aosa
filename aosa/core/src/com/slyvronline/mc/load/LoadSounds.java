@@ -15,6 +15,7 @@ public class LoadSounds {
 		//sounds.add(new SoundFx(Gdx.audio.newSound(Gdx.files.internal("sounds/zipclick.wav")),"click"));
 		sounds.add(new SoundFx(Gdx.audio.newSound(Gdx.files.internal("data/sounds/click3.wav")),"click"));
 		sounds.add(new SoundFx(Gdx.audio.newSound(Gdx.files.internal("data/sounds/error.wav")),"error"));
+		sounds.add(new SoundFx(Gdx.audio.newSound(Gdx.files.internal("data/sounds/call.wav")),"call"));
 		
 		Aosa.getGlobal().setSounds(sounds);
 	}
