@@ -26,6 +26,9 @@ public class Updater {
 			if (Aosa.getGlobal().getBackMenu()!=null)
 				Aosa.getGlobal().getBackMenu().update();
 			
+			if (Aosa.getGlobal().getOverlapMenu()!=null)
+				Aosa.getGlobal().getOverlapMenu().update();
+			
 			Aosa.getGlobal().getCamera().update();
 			Aosa.getGlobal().getHudCam().update();
 			Aosa.getGlobal().getBackCam().update();

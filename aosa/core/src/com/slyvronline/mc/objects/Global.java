@@ -28,6 +28,7 @@ public class Global {
 	private ArrayList<Menu> menus;
 	
 	private Menu backMenu;
+	private Menu overlapMenu;
 	private Menu currentMenu;
 	private Menu musicMenu;
 	private AudioTrack currentTrack;
@@ -131,6 +132,12 @@ public class Global {
 	}
 	public void setBackMenu(Menu backMenu) {
 		this.backMenu = backMenu;
+	}
+	public Menu getOverlapMenu() {
+		return overlapMenu;
+	}
+	public void setOverlapMenu(Menu overlapMenu) {
+		this.overlapMenu = overlapMenu;
 	}
 	public OrthographicCamera getHudCam() {
 		return hudCam;

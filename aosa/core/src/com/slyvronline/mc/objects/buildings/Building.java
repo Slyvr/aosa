@@ -17,9 +17,12 @@ public abstract class Building extends Ent{
 	private int actionProgress;
 	private int actionMineralCost;
 	private int actionGasCost;
+	private boolean enemy;
+	private int hp;
 	
 	public Building(){
 		super();
+		hp = 1000;
 	}
 	
 	public abstract void update();
@@ -148,6 +151,22 @@ public abstract class Building extends Ent{
 
 	public void setActionGasCost(int actionGasCost) {
 		this.actionGasCost = actionGasCost;
+	}
+
+	public boolean isEnemy() {
+		return enemy;
+	}
+
+	public void setEnemy(boolean enemy) {
+		this.enemy = enemy;
+	}
+
+	public int getHp() {
+		return hp;
+	}
+
+	public void setHp(int hp) {
+		this.hp = hp;
 	}
 	
 }

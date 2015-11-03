@@ -20,7 +20,8 @@ public class LoadMenus {
 		menus.add(loadLoadMenu());
 		menus.add(loadMainMenu());
 		menus.add(loadGameMenu());
-		menus.add(loadBackMenu());
+		menus.add(loadSkyboxMenu());
+		menus.add(loadSkyboxShadowMenu());
 		menus.add(loadMusicMenu());
 		
 		Aosa.getGlobal().setMenus(menus);
@@ -171,7 +172,7 @@ public class LoadMenus {
 		return menu;
 	}
 	
-	public static Menu loadBackMenu(){
+	public static Menu loadSkyboxMenu(){
 		SkyboxMenu menu = new SkyboxMenu();
 		menu.setName("skybox");
 		
@@ -179,7 +180,7 @@ public class LoadMenus {
 		
 		Ent skybox1 = new Ent();
 		skybox1.setName("skybox1");
-		skybox1.setImg(Aosa.getGlobal().getImgByName("skybox"));
+		skybox1.setImg(Aosa.getGlobal().getImgByName("skybox1"));
 		skybox1.setPosBox(new Rectangle(0,
 				0,
 				skybox1.getImg().getTex().getWidth(),
@@ -188,12 +189,45 @@ public class LoadMenus {
 		
 		Ent skybox2 = new Ent();
 		skybox2.setName("skybox2");
-		skybox2.setImg(Aosa.getGlobal().getImgByName("skybox"));
+		skybox2.setImg(Aosa.getGlobal().getImgByName("skybox2"));
 		skybox2.setPosBox(new Rectangle(-skybox2.getImg().getTex().getWidth(),
 				0,
 				skybox2.getImg().getTex().getWidth(),
 				skybox2.getImg().getTex().getHeight()));
 		ents.add(skybox2);
+		
+		menu.setEnts(ents);
+		
+		ArrayList<Menu> subMenus = new ArrayList<Menu>();
+		
+		menu.setSubMenus(subMenus);
+		
+		return menu;
+	}
+	
+	public static Menu loadSkyboxShadowMenu(){
+		SkyboxShadowMenu menu = new SkyboxShadowMenu();
+		menu.setName("skyboxshadow");
+		
+		ArrayList<Ent> ents = new ArrayList<Ent>();
+		
+		Ent skybox_shadow1 = new Ent();
+		skybox_shadow1.setName("skybox_shadow1");
+		skybox_shadow1.setImg(Aosa.getGlobal().getImgByName("skybox_shadow1"));
+		skybox_shadow1.setPosBox(new Rectangle(0,
+				0,
+				skybox_shadow1.getImg().getTex().getWidth(),
+				skybox_shadow1.getImg().getTex().getHeight()));
+		ents.add(skybox_shadow1);
+		
+		Ent skybox_shadow2 = new Ent();
+		skybox_shadow2.setName("skybox_shadow2");
+		skybox_shadow2.setImg(Aosa.getGlobal().getImgByName("skybox_shadow2"));
+		skybox_shadow2.setPosBox(new Rectangle(-skybox_shadow2.getImg().getTex().getWidth(),
+				0,
+				skybox_shadow2.getImg().getTex().getWidth(),
+				skybox_shadow2.getImg().getTex().getHeight()));
+		ents.add(skybox_shadow2);
 		
 		menu.setEnts(ents);
 		

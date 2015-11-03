@@ -12,6 +12,7 @@ import com.slyvronline.aosa.runnable.WorldGeneratorThread;
 import com.slyvronline.mc.objects.buildings.Base;
 import com.slyvronline.mc.objects.buildings.Mine;
 import com.slyvronline.mc.objects.buildings.Refinery;
+import com.slyvronline.mc.objects.buildings.Spawner;
 import com.slyvronline.mc.objects.characters.Grunt;
 import com.slyvronline.mc.objects.characters.MainCharacter;
 import com.slyvronline.mc.objects.characters.Soldier;
@@ -32,9 +33,14 @@ public class World {
 	private ArrayList<Grunt> grunts;
 	private MainCharacter mainChar;
 	private Ent summon;
-	private Ent enemySpawn1;
-	private Ent enemySpawn2;
+	private Spawner enemySpawn1;
+	private Spawner enemySpawn2;
 	private int worldSize = 1000;
+	private int dayCounter;
+	private boolean startDay;
+	private long startDayMilli;
+	private boolean startNight;
+	private long startNightMilli;
 	
 	public World(){
 		bottomBlocks = new ArrayList<Block>();
@@ -45,14 +51,19 @@ public class World {
 		summon.setImg(Aosa.getGlobal().getImgByName("summon"));
 		summon.setPosBox(new Rectangle());
 		
-		enemySpawn1 = new Ent();
+		enemySpawn1 = new Spawner();
 		enemySpawn1.setName("enemySpawn1");
 		enemySpawn1.setImg(Aosa.getGlobal().getImgByName("enemyspawn1"));
 		enemySpawn1.setPosBox(new Rectangle(0,0,
 				enemySpawn1.getImg().getTex().getWidth(),
 				enemySpawn1.getImg().getTex().getHeight()));
+		enemySpawn1.setEnemy(true);
+		enemySpawn1.setSpawnPos(new Rectangle(enemySpawn1.getImg().getTex().getWidth(),
+				80+32,
+				enemySpawn1.getImg().getTex().getWidth(),
+				enemySpawn1.getImg().getTex().getHeight()));
 		
-		enemySpawn2 = new Ent();
+		enemySpawn2 = new Spawner();
 		enemySpawn2.setName("enemySpawn2");
 		enemySpawn2.setImg(Aosa.getGlobal().getImgByName("enemyspawn2"));
 		float rightblockX = (worldSize * 32 - 650 );
@@ -60,11 +71,18 @@ public class World {
 				0,
 				enemySpawn2.getImg().getTex().getWidth(),
 				enemySpawn2.getImg().getTex().getHeight()));
+		enemySpawn2.setEnemy(true);
+		enemySpawn2.setSpawnPos(new Rectangle(rightblockX-enemySpawn2.getImg().getTex().getWidth() - 32,
+				80+32,
+				enemySpawn2.getImg().getTex().getWidth(),
+				enemySpawn2.getImg().getTex().getHeight()));
 		
 		setupCharacters();
 		WorldGeneratorThread wgt = new WorldGeneratorThread("thread1");
 		Aosa.getGlobal().setThread(wgt);
 		wgt.start();
+		
+		startDayMilli = System.currentTimeMillis();
 	}
 	
 	public void update(){
@@ -74,9 +92,27 @@ public class World {
 			w.update();
 		}
 		
+		for(Grunt g : grunts){
+			g.update();
+		}
+		
 		for(BlockGroup grp : blockGroups){
 			grp.update();
 		}
+		
+		enemySpawn1.update();
+		enemySpawn2.update();
+		
+		if (startDay){
+			updateStartDay();
+		}
+		if (startNight){
+			updateStartNight();
+		}
+		
+		spawnEnemies();
+		
+		updateDeaths();
 	}
 	
 	public void render(SpriteBatch batch){
@@ -100,6 +136,103 @@ public class World {
 		enemySpawn1.render(batch);
 		enemySpawn2.render(batch);
 		summon.render(batch);
+	}
+	
+	
+	private int spawnCounter;
+	private Spawner spawner;
+	private boolean spawnedEnemies;
+	
+	public void updateStartDay(){
+		startDay = false;
+		startDayMilli = System.currentTimeMillis();
+		dayCounter++;
+		spawnCounter = 0;
+
+		if (new Random().nextBoolean()){
+			spawner = enemySpawn1;
+		}
+		else{
+			spawner = enemySpawn2;
+		}
+		
+		spawnedEnemies = false;
+		
+		//spawnEnemies();
+	}
+	
+	public void updateStartNight(){
+		startNight = false;
+		startNightMilli = System.currentTimeMillis();
+	}
+	
+	public void spawnEnemies(){
+		//Spawn enemies a few seconds after the day starts
+		if (!spawnedEnemies && System.currentTimeMillis() > startDayMilli+10000){
+			spawnCounter = dayCounter;
+			for(int i=0; i<spawnCounter; i++){
+				Grunt g = new Grunt();
+				g.setName("Grunt");
+				g.setPosBox(new Rectangle(spawner.getSpawnPos().getX() + (i*16),
+						spawner.getSpawnPos().getY(),
+						g.getImg().getTex().getWidth(),
+						g.getImg().getTex().getHeight()));
+				if (spawner.getName().contains("1")) g.setChargingRight(true);
+				else g.setChargingRight(false);
+				this.grunts.add(g);
+			}
+			System.out.println("Spawned Enemies");
+			spawnedEnemies = true;
+		}
+	}
+	
+	public void updateDeaths(){
+		//Check worker hp
+		for(int i=workers.size()-1; i>=0; i--){
+			Worker w = workers.get(i);
+			if (w.getHp() <= 0){
+				workers.remove(w);
+			}
+		}
+		
+		//Check soldier hp
+		for(int i=soldiers.size()-1; i>=0; i--){
+			Soldier s = soldiers.get(i);
+			if (s.getHp() <= 0){
+				soldiers.remove(s);
+			}
+		}
+		
+		//Check player hp
+		
+		//Check building worker, soldier, and building hp
+		for(BlockGroup bg : blockGroups){
+			if (bg.getSoldiers().size() > 0){
+				for(int i=bg.getSoldiers().size()-1; i>=0; i--){
+					Soldier s = bg.getSoldiers().get(i);
+					if (s.getHp() <= 0){
+						bg.getSoldiers().remove(s);
+					}
+				}
+			}
+			if (bg.getWorker() != null){
+				if (bg.getWorker().getHp() <= 0){
+					bg.setWorker(null);
+				}
+			}
+			if (bg.getBuilding() != null){
+				if (bg.getBuilding().getHp() <= 0){
+					bg.setBuilding(null);
+				}
+			}
+			for(Block b : bg.getBlocks()){
+				if (b.getWorker() != null){
+					if (b.getWorker().getHp() <= 0){
+						b.setWorker(null);
+					}
+				}
+			}
+		}
 	}
 	
 	public void updateFollowers(){
@@ -474,6 +607,62 @@ public class World {
 
 	public void setWorldSize(int worldSize) {
 		this.worldSize = worldSize;
+	}
+
+	public Spawner getEnemySpawn1() {
+		return enemySpawn1;
+	}
+
+	public void setEnemySpawn1(Spawner enemySpawn1) {
+		this.enemySpawn1 = enemySpawn1;
+	}
+
+	public Spawner getEnemySpawn2() {
+		return enemySpawn2;
+	}
+
+	public void setEnemySpawn2(Spawner enemySpawn2) {
+		this.enemySpawn2 = enemySpawn2;
+	}
+
+	public int getDayCounter() {
+		return dayCounter;
+	}
+
+	public void setDayCounter(int dayCounter) {
+		this.dayCounter = dayCounter;
+	}
+
+	public boolean isStartDay() {
+		return startDay;
+	}
+
+	public void setStartDay(boolean startDay) {
+		this.startDay = startDay;
+	}
+
+	public boolean isStartNight() {
+		return startNight;
+	}
+
+	public void setStartNight(boolean startNight) {
+		this.startNight = startNight;
+	}
+
+	public long getStartDayMilli() {
+		return startDayMilli;
+	}
+
+	public void setStartDayMilli(long startDayMilli) {
+		this.startDayMilli = startDayMilli;
+	}
+
+	public long getStartNightMilli() {
+		return startNightMilli;
+	}
+
+	public void setStartNightMilli(long startNightMilli) {
+		this.startNightMilli = startNightMilli;
 	}
 	
 }

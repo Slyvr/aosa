@@ -49,6 +49,10 @@ data/imgs/tower.png
 data/imgs/barracks.png
 data/imgs/construct.png
 data/imgs/skybox.png
+data/imgs/skybox1.png
+data/imgs/skybox2.png
+data/imgs/skybox_shadow1.png
+data/imgs/skybox_shadow2.png
 data/imgs/summon.png
 data/imgs/assigned.png
 data/imgs/enemyspawn1.png

@@ -38,6 +38,11 @@ public class Renderer {
 			}
 		}
 		
+		if (Aosa.getGlobal().getOverlapMenu()!=null){
+			batch.setProjectionMatrix(Aosa.getGlobal().getBackCam().combined);
+			Aosa.getGlobal().getOverlapMenu().render(batch);
+		}
+		
 		batch.setProjectionMatrix(Aosa.getGlobal().getHudCam().combined);
 		
 		Aosa.getGlobal().getCurrentMenu().render(batch);

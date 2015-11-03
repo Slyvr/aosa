@@ -31,6 +31,7 @@ public class WorldGeneratorThread extends Thread{
 		System.out.println("Ending World Generator Thread");
 		Aosa.getGlobal().setCurrentMenu(Aosa.getGlobal().getMenuByName("game"));
 		Aosa.getGlobal().setBackMenu(Aosa.getGlobal().getMenuByName("skybox"));
+		Aosa.getGlobal().setOverlapMenu(Aosa.getGlobal().getMenuByName("skyboxshadow"));
 		Ent skybox1 = Aosa.getGlobal().getBackMenu().getEntByName("skybox1");
 		Ent skybox2 = Aosa.getGlobal().getBackMenu().getEntByName("skybox2");
 		skybox1.getPosBox().setX(0);

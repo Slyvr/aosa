@@ -318,7 +318,8 @@ public class GameInstance {
 		if (Aosa.getGlobal().getCurrentMenu().getName().equals("game")){
 			Ent debugTooltip = Aosa.getGlobal().getCurrentMenu().getEntByName("debugTooltip");
 			String debugText = "";
-			debugText += "Minerals: "+Aosa.getGlobal().getGame().getMineralsCollected();
+			debugText += "Day: "+this.world.getDayCounter();
+			debugText += "\nMinerals: "+Aosa.getGlobal().getGame().getMineralsCollected();
 			debugText += "\nGas: "+Aosa.getGlobal().getGame().getGasCollected();
 			debugText += "\nFPS: "+Gdx.graphics.getFramesPerSecond();
 			debugText += "\nCamX: "+Aosa.getGlobal().getCamera().position.x/32;
