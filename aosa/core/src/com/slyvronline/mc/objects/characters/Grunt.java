@@ -33,54 +33,20 @@ public class Grunt extends Character{
 		}
 		
 		if (currentState == STATE.CHARGING){
-			updateMovement((Aosa.getGlobal().getGame().getWorld().getWorldSize()*32)/2);
+			updateMovement();
 		}
 	}
 	
 	public void checkAttack(){
 		boolean foundSomethingToAttack = false;
-		//Check if workers are nearby
-		for(Worker w : Aosa.getGlobal().getGame().getWorld().getWorkers()){
-			if (this.getPosBox().getX() >= w.getPosBox().getX() - 64 &&
-					this.getPosBox().getX() <= w.getPosBox().getX() + 64){
-				foundSomethingToAttack = true;
-				currentState = STATE.ATTACKING;
-				targetWorker = w;
-				break;
-			}
-		}
 		
-		//Check if soldiers are nearby
-		if (!foundSomethingToAttack)
-		for(Soldier s : Aosa.getGlobal().getGame().getWorld().getSoldiers()){
-			if (this.getPosBox().getX() >= s.getPosBox().getX() - 64 &&
-					this.getPosBox().getX() <= s.getPosBox().getX() + 64){
-				foundSomethingToAttack = true;
-				currentState = STATE.ATTACKING;
-				targetSoldier = s;
-				break;
-			}
-		}
-		
-		//Check if player is nearby
-		if (!foundSomethingToAttack){
-			MainCharacter charac = Aosa.getGlobal().getGame().getWorld().getMainChar();
-			if (this.getPosBox().getX() >= charac.getPosBox().getX() - 64 &&
-					this.getPosBox().getX() <= charac.getPosBox().getX() + 64){
-				foundSomethingToAttack = true;
-				currentState = STATE.ATTACKING;
-				targetChar = charac;
-			}
-		}
-		
-		//Check if buildings are nearby
 		if (!foundSomethingToAttack){
 			boolean targetSet = false;
 			for(BlockGroup bg : Aosa.getGlobal().getGame().getWorld().getBlockGroups()){
 				if (bg.getSoldiers().size() > 0){
 					for(Soldier s : bg.getSoldiers()){
-						if (this.getPosBox().getX() >= s.getPosBox().getX() - 64 &&
-								this.getPosBox().getX() <= s.getPosBox().getX() + 64){
+						if (this.getPosBox().getX() >= s.getPosBox().getX() - this.getSightDistance() &&
+								this.getPosBox().getX() <= s.getPosBox().getX() + this.getSightDistance()){
 							foundSomethingToAttack = true;
 							currentState = STATE.ATTACKING;
 							targetSoldier = s;
@@ -89,17 +55,48 @@ public class Grunt extends Character{
 						}
 					}
 				}
-				else if (bg.getWorker() != null){
-					if (this.getPosBox().getX() >= bg.getWorker().getPosBox().getX() - 64 &&
-							this.getPosBox().getX() <= bg.getWorker().getPosBox().getX() + 64){
+				if (targetSet) break;
+			}
+		}
+		
+		//Check if soldiers are nearby
+		if (!foundSomethingToAttack)
+		for(Soldier s : Aosa.getGlobal().getGame().getWorld().getSoldiers()){
+			if (this.getPosBox().getX() >= s.getPosBox().getX() - this.getSightDistance() &&
+					this.getPosBox().getX() <= s.getPosBox().getX() + this.getSightDistance()){
+				foundSomethingToAttack = true;
+				currentState = STATE.ATTACKING;
+				targetSoldier = s;
+				break;
+			}
+		}
+		
+		//Check if workers are nearby
+		for(Worker w : Aosa.getGlobal().getGame().getWorld().getWorkers()){
+			if (this.getPosBox().getX() >= w.getPosBox().getX() - this.getSightDistance() &&
+					this.getPosBox().getX() <= w.getPosBox().getX() + this.getSightDistance()){
+				foundSomethingToAttack = true;
+				currentState = STATE.ATTACKING;
+				targetWorker = w;
+				break;
+			}
+		}
+		
+		//Check if buildings are nearby
+		if (!foundSomethingToAttack){
+			boolean targetSet = false;
+			for(BlockGroup bg : Aosa.getGlobal().getGame().getWorld().getBlockGroups()){
+				if (bg.getWorker() != null){
+					if (this.getPosBox().getX() >= bg.getWorker().getPosBox().getX() - this.getSightDistance() &&
+							this.getPosBox().getX() <= bg.getWorker().getPosBox().getX() + this.getSightDistance()){
 						foundSomethingToAttack = true;
 						currentState = STATE.ATTACKING;
 						targetWorker = bg.getWorker();
 						targetSet = true;
 					}
 				}
-				else if (bg.getBuilding() != null && (this.getPosBox().getX() >= bg.getBuilding().getPosBox().getX() - 64 &&
-						this.getPosBox().getX() <= bg.getBuilding().getPosBox().getX() + 64)){
+				else if (bg.getBuilding() != null && (this.getPosBox().getX() >= bg.getBuilding().getPosBox().getX() - this.getSightDistance() &&
+						this.getPosBox().getX() <= bg.getBuilding().getPosBox().getX() + this.getSightDistance())){
 					foundSomethingToAttack = true;
 					currentState = STATE.ATTACKING;
 					targetBuilding = bg;
@@ -108,8 +105,8 @@ public class Grunt extends Character{
 				else{
 					for(Block b : bg.getBlocks()){
 						if (b.getWorker() != null){
-							if (this.getPosBox().getX() >= b.getWorker().getPosBox().getX() - 64 &&
-									this.getPosBox().getX() <= b.getWorker().getPosBox().getX() + 64){
+							if (this.getPosBox().getX() >= b.getWorker().getPosBox().getX() - this.getSightDistance() &&
+									this.getPosBox().getX() <= b.getWorker().getPosBox().getX() + this.getSightDistance()){
 								foundSomethingToAttack = true;
 								currentState = STATE.ATTACKING;
 								targetWorker = b.getWorker();
@@ -121,6 +118,17 @@ public class Grunt extends Character{
 				if (targetSet){
 					break;
 				}
+			}
+		}
+		
+		//Check if player is nearby
+		if (!foundSomethingToAttack){
+			MainCharacter charac = Aosa.getGlobal().getGame().getWorld().getMainChar();
+			if (this.getPosBox().getX() >= charac.getPosBox().getX() - this.getSightDistance() &&
+					this.getPosBox().getX() <= charac.getPosBox().getX() + this.getSightDistance()){
+				foundSomethingToAttack = true;
+				currentState = STATE.ATTACKING;
+				targetChar = charac;
 			}
 		}
 		
@@ -138,34 +146,36 @@ public class Grunt extends Character{
 		if (targetWorker != null) targetPos = targetWorker.getPosBox();
 		if (targetSoldier != null) targetPos = targetSoldier.getPosBox();
 		if (targetChar != null) targetPos = targetChar.getPosBox();
-		if (targetBuilding != null) targetPos = targetBuilding.getBuilding().getPosBox();
+		if (targetBuilding != null && targetBuilding.getBuilding() != null) targetPos = targetBuilding.getBuilding().getPosBox();
 		
-		int speed = this.getWalkSpeed();
+		int speed = this.getJogSpeed();
 		
-		if (this.getPosBox().getX() < (targetPos.getX()-10)){
-			this.getPosBox().setX(this.getPosBox().getX() + speed);
-		}
-		else if (this.getPosBox().getX() > (targetPos.getX()+10)){
-			this.getPosBox().setX(this.getPosBox().getX() - speed);
-		}
-		else{
-			//Within attacking distance
-			if (targetWorker != null){
-				targetWorker.setHp(targetWorker.getHp() - this.getAtk());
+		if (targetPos != null){
+			if (this.getPosBox().getX() < (targetPos.getX()-this.getAttackDistance())){
+				this.getPosBox().setX(this.getPosBox().getX() + speed);
 			}
-			if (targetSoldier != null){
-				targetSoldier.setHp(targetSoldier.getHp() - this.getAtk());
+			else if (this.getPosBox().getX() > (targetPos.getX()+this.getAttackDistance())){
+				this.getPosBox().setX(this.getPosBox().getX() - speed);
 			}
-			if (targetChar != null){
-				targetChar.setHp(targetChar.getHp() - this.getAtk());
-			}
-			if (targetBuilding != null){
-				targetBuilding.getBuilding().setHp(targetBuilding.getBuilding().getHp() - this.getAtk());
+			else{
+				//Within attacking distance
+				if (targetWorker != null){
+					targetWorker.setHp(targetWorker.getHp() - this.getAtk());
+				}
+				if (targetSoldier != null){
+					targetSoldier.setHp(targetSoldier.getHp() - this.getAtk());
+				}
+				if (targetChar != null){
+					targetChar.setHp(targetChar.getHp() - this.getAtk());
+				}
+				if (targetBuilding != null && targetBuilding.getBuilding() != null){
+					targetBuilding.getBuilding().setHp(targetBuilding.getBuilding().getHp() - this.getAtk());
+				}
 			}
 		}
 	}
 	
-	public void updateMovement(int baseX){
+	public void updateMovement(){
 		int speed = this.getWalkSpeed();
 		
 		if (chargingRight){

@@ -109,6 +109,11 @@ public class World {
 		if (startNight){
 			updateStartNight();
 		}
+		//if spawner isn't set yet, make sure we do first day init
+		if (spawner == null){
+			startDay = true;
+			updateStartDay();
+		}
 		
 		spawnEnemies();
 		
@@ -181,7 +186,7 @@ public class World {
 				else g.setChargingRight(false);
 				this.grunts.add(g);
 			}
-			System.out.println("Spawned Enemies");
+			System.out.println("Spawned Enemies "+spawner.getName());
 			spawnedEnemies = true;
 		}
 	}
@@ -191,6 +196,11 @@ public class World {
 		for(int i=workers.size()-1; i>=0; i--){
 			Worker w = workers.get(i);
 			if (w.getHp() <= 0){
+				for(Grunt g : grunts){
+					if (w.equals(g.getTargetWorker())){
+						g.setTargetWorker(null);
+					}
+				}
 				workers.remove(w);
 			}
 		}
@@ -199,6 +209,11 @@ public class World {
 		for(int i=soldiers.size()-1; i>=0; i--){
 			Soldier s = soldiers.get(i);
 			if (s.getHp() <= 0){
+				for(Grunt g : grunts){
+					if (s.equals(g.getTargetSoldier())){
+						g.setTargetSoldier(null);
+					}
+				}
 				soldiers.remove(s);
 			}
 		}
@@ -211,23 +226,43 @@ public class World {
 				for(int i=bg.getSoldiers().size()-1; i>=0; i--){
 					Soldier s = bg.getSoldiers().get(i);
 					if (s.getHp() <= 0){
+						for(Grunt g : grunts){
+							if (s.equals(g.getTargetSoldier())){
+								g.setTargetSoldier(null);
+							}
+						}
 						bg.getSoldiers().remove(s);
 					}
 				}
 			}
 			if (bg.getWorker() != null){
 				if (bg.getWorker().getHp() <= 0){
+					for(Grunt g : grunts){
+						if (bg.getWorker().equals(g.getTargetWorker())){
+							g.setTargetWorker(null);
+						}
+					}
 					bg.setWorker(null);
 				}
 			}
 			if (bg.getBuilding() != null){
 				if (bg.getBuilding().getHp() <= 0){
+					for(Grunt g : grunts){
+						if (bg.equals(g.getTargetBuilding())){
+							g.setTargetBuilding(null);
+						}
+					}
 					bg.setBuilding(null);
 				}
 			}
 			for(Block b : bg.getBlocks()){
 				if (b.getWorker() != null){
 					if (b.getWorker().getHp() <= 0){
+						for(Grunt g : grunts){
+							if (b.getWorker().equals(g.getTargetWorker())){
+								g.setTargetWorker(null);
+							}
+						}
 						b.setWorker(null);
 					}
 				}

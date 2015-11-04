@@ -1,6 +1,7 @@
 package com.slyvronline.mc.objects.menus;
 
 import com.badlogic.gdx.Gdx;
+import com.slyvronline.aosa.Aosa;
 import com.slyvronline.mc.objects.Ent;
 import com.slyvronline.mc.objects.Menu;
 import com.slyvronline.mc.utils.GameConstants;
@@ -11,16 +12,45 @@ public class SkyboxShadowMenu extends Menu {
 		
 	}
 	
+	private boolean initiatingMorning;
+	private boolean initiatingNight;
+	
+	private long timer;
+	
 	public void update(){
-		Ent skybox1 = this.getEntByName("skybox_shadow1");
-		Ent skybox2 = this.getEntByName("skybox_shadow2");
-		skybox1.getPosBox().setX(skybox1.getPosBox().getX() - GameConstants.SKYBOX_SPEED);
-		skybox2.getPosBox().setX(skybox2.getPosBox().getX() - GameConstants.SKYBOX_SPEED);
-		if (skybox1.getPosBox().getX() <= -skybox1.getImg().getTex().getWidth()){
-			skybox1.getPosBox().setX(skybox2.getPosBox().getX()+skybox1.getImg().getTex().getWidth());
+		Ent skybox_shadow = this.getEntByName("skybox_shadow");
+		boolean startDay = Aosa.getGlobal().getGame().getWorld().isStartDay();
+		boolean startNight = Aosa.getGlobal().getGame().getWorld().isStartNight();
+		
+		if (!initiatingMorning && startDay){
+			initiatingMorning = startDay;
+			timer = System.currentTimeMillis();
 		}
-		if (skybox2.getPosBox().getX() <= -skybox2.getImg().getTex().getWidth()){
-			skybox2.getPosBox().setX(skybox1.getPosBox().getX()+skybox2.getImg().getTex().getWidth());
+		if (!initiatingNight && startNight){
+			initiatingNight = startNight;
+			timer = System.currentTimeMillis();
 		}
+		
+		if (initiatingMorning && skybox_shadow.getColor().a > 0.1f){
+			if (System.currentTimeMillis() > timer + 100){
+				skybox_shadow.getColor().a = skybox_shadow.getColor().a - 0.01f;
+				timer = System.currentTimeMillis();
+			}
+		}
+		else if (initiatingMorning && skybox_shadow.getColor().a <= 0.1f){
+			initiatingMorning = false;
+		}
+		
+		if (initiatingNight && skybox_shadow.getColor().a < 0.8f){
+			if (System.currentTimeMillis() > timer + 100){
+				skybox_shadow.getColor().a = skybox_shadow.getColor().a + 0.01f;
+				timer = System.currentTimeMillis();
+			}
+		}
+		else if (initiatingNight && skybox_shadow.getColor().a >= 0.8f){
+			initiatingNight = false;
+		}
+		
+		System.out.println(skybox_shadow.getColor().a);
 	}
 }

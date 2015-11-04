@@ -15,6 +15,8 @@ public abstract class Character extends Ent {
 	private int walkSpeed;
 	private int jogSpeed;
 	private int runSpeed;
+	private float sightDistance;
+	private float attackDistance;
 	
 	public Character(){
 		walkSpeed = 5;
@@ -25,6 +27,8 @@ public abstract class Character extends Ent {
 		atk = 1;
 		def = 1;
 		abilities = new ArrayList<Ability>();
+		attackDistance = 45;
+		sightDistance = 300;
 	}
 	
 	public void update(){
@@ -93,6 +97,22 @@ public abstract class Character extends Ent {
 
 	public void setAbilities(ArrayList<Ability> abilities) {
 		this.abilities = abilities;
+	}
+
+	public float getSightDistance() {
+		return sightDistance;
+	}
+
+	public void setSightDistance(float sightDistance) {
+		this.sightDistance = sightDistance;
+	}
+
+	public float getAttackDistance() {
+		return attackDistance;
+	}
+
+	public void setAttackDistance(float attackDistance) {
+		this.attackDistance = attackDistance;
 	}
 	
 }

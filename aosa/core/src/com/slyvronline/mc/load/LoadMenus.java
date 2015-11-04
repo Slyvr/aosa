@@ -211,23 +211,16 @@ public class LoadMenus {
 		
 		ArrayList<Ent> ents = new ArrayList<Ent>();
 		
-		Ent skybox_shadow1 = new Ent();
-		skybox_shadow1.setName("skybox_shadow1");
-		skybox_shadow1.setImg(Aosa.getGlobal().getImgByName("skybox_shadow1"));
-		skybox_shadow1.setPosBox(new Rectangle(0,
+		Ent skybox_shadow = new Ent();
+		skybox_shadow.setName("skybox_shadow");
+		skybox_shadow.setImg(Aosa.getGlobal().getImgByName("skybox_shadow3"));
+		skybox_shadow.setPosBox(new Rectangle(0,
 				0,
-				skybox_shadow1.getImg().getTex().getWidth(),
-				skybox_shadow1.getImg().getTex().getHeight()));
-		ents.add(skybox_shadow1);
-		
-		Ent skybox_shadow2 = new Ent();
-		skybox_shadow2.setName("skybox_shadow2");
-		skybox_shadow2.setImg(Aosa.getGlobal().getImgByName("skybox_shadow2"));
-		skybox_shadow2.setPosBox(new Rectangle(-skybox_shadow2.getImg().getTex().getWidth(),
-				0,
-				skybox_shadow2.getImg().getTex().getWidth(),
-				skybox_shadow2.getImg().getTex().getHeight()));
-		ents.add(skybox_shadow2);
+				skybox_shadow.getImg().getTex().getWidth(),
+				skybox_shadow.getImg().getTex().getHeight()));
+		skybox_shadow.setColor(Color.BLACK);
+		skybox_shadow.getColor().a = 0f;
+		ents.add(skybox_shadow);
 		
 		menu.setEnts(ents);
 		
