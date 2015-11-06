@@ -12,6 +12,7 @@ import com.slyvronline.aosa.Aosa;
 import com.slyvronline.mc.objects.characters.MainCharacter;
 import com.slyvronline.mc.objects.characters.Soldier;
 import com.slyvronline.mc.objects.characters.Worker;
+import com.slyvronline.mc.objects.characters.Character.STATE;
 import com.slyvronline.mc.objects.menus.GameMenu;
 import com.slyvronline.mc.utils.Utils;
 
@@ -171,14 +172,14 @@ public class GameInstance {
 				}
 				else */if (selected.getDismantleAmt() > 0 && selected.getWorker() == null){
 					selected.setWorker(worker);
-					worker.setSelected(false);
+					worker.setCurrentState(STATE.WORKING);
 					world.getWorkers().remove(worker);
 				}
 			}
 			if (soldier != null){
 				BlockGroup grp = world.getSelectedBlockGroup();
 				if (grp.getBuilding() != null && grp.getBuilding().getName().equals("Tower")){
-					soldier.setSelected(false);
+					soldier.setCurrentState(STATE.DEFENDING);
 					grp.getSoldiers().add(soldier);
 					world.getSoldiers().remove(soldier);
 				}
@@ -217,12 +218,12 @@ public class GameInstance {
 		
 		for(Worker w : world.getWorkers()){
 			if (w.getPosBox().overlaps(world.getSummon().getPosBox())){
-				w.setSelected(true);
+				w.setCurrentState(STATE.FOLLOWING);
 			}
 		}
 		for(Soldier s : world.getSoldiers()){
 			if (s.getPosBox().overlaps(world.getSummon().getPosBox())){
-				s.setSelected(true);
+				s.setCurrentState(STATE.FOLLOWING);
 			}
 		}
 		for(BlockGroup grp : world.getBlockGroups()){
@@ -232,7 +233,7 @@ public class GameInstance {
 						Worker w = b.getWorker();
 						world.getWorkers().add(w);
 						b.setWorker(null);
-						w.setSelected(true);
+						w.setCurrentState(STATE.FOLLOWING);
 					}
 				}
 			}
@@ -241,7 +242,7 @@ public class GameInstance {
 					Worker w = grp.getWorker();
 					world.getWorkers().add(w);
 					grp.setWorker(null);
-					w.setSelected(true);
+					w.setCurrentState(STATE.FOLLOWING);
 					grp.getBuilding().setActionProgress(0);
 				}
 			}
@@ -249,7 +250,7 @@ public class GameInstance {
 				for(int i=grp.getSoldiers().size()-1; i>=0; i--){
 					Soldier s = grp.getSoldiers().get(i);
 					if (new Rectangle(s.getPosBox().getX(),80+32,32,32).overlaps(world.getSummon().getPosBox())){
-						s.setSelected(true);
+						s.setCurrentState(STATE.FOLLOWING);
 						s.getPosBox().setY(80+32);
 						world.getSoldiers().add(s);
 						grp.getSoldiers().remove(i);
@@ -262,7 +263,7 @@ public class GameInstance {
 	
 	public void moveMainChar(){
 		MainCharacter main = world.getMainChar();
-		int speed = 1;
+		float speed = 1;
 		if (Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT) || Gdx.input.isKeyPressed(Keys.SHIFT_LEFT)){
 			speed = main.getRunSpeed();
 		}

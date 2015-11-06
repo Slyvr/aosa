@@ -17,6 +17,7 @@ import com.slyvronline.mc.objects.characters.Grunt;
 import com.slyvronline.mc.objects.characters.MainCharacter;
 import com.slyvronline.mc.objects.characters.Soldier;
 import com.slyvronline.mc.objects.characters.Worker;
+import com.slyvronline.mc.objects.characters.Character.STATE;
 import com.slyvronline.mc.utils.GameConstants;
 import com.slyvronline.mc.utils.Utils;
 
@@ -98,6 +99,10 @@ public class World {
 		
 		for(BlockGroup grp : blockGroups){
 			grp.update();
+		}
+		
+		for(Soldier s : soldiers){
+			s.update();
 		}
 		
 		enemySpawn1.update();
@@ -268,6 +273,12 @@ public class World {
 				}
 			}
 		}
+		
+		//Check grunts hp
+		for(int i=grunts.size()-1; i>=0; i--){
+			Grunt g = grunts.get(i);
+			if (g.getHp() <= 0) grunts.remove(g);
+		}
 	}
 	
 	public void updateFollowers(){
@@ -275,11 +286,11 @@ public class World {
 		int numLeft=0;
 		int numRight=0;
 		for(Soldier s : soldiers){
-			if (s.isSelected()){
+			if (s.getCurrentState() == STATE.FOLLOWING){
 				if (s.getPosBox().getX() < mainCharX) numLeft++;
 				if (s.getPosBox().getX() > mainCharX) numRight++;
 				
-				int speed = s.getWalkSpeed();
+				float speed = s.getWalkSpeed();
 				
 				if (s.getPosBox().getX() < (mainCharX-64)-(numLeft*32)){
 					s.getPosBox().setX(s.getPosBox().getX() + speed);
@@ -290,11 +301,11 @@ public class World {
 			}
 		}
 		for(Worker w : workers){
-			if (w.isSelected()){
+			if (w.getCurrentState() == STATE.FOLLOWING){
 				if (w.getPosBox().getX() < mainCharX) numLeft++;
 				if (w.getPosBox().getX() > mainCharX) numRight++;
 				
-				int speed = w.getWalkSpeed();
+				float speed = w.getWalkSpeed();
 				
 				if (w.getPosBox().getX() < (mainCharX-64)-(numLeft*32)){
 					w.getPosBox().setX(w.getPosBox().getX() + speed);
@@ -548,7 +559,7 @@ public class World {
 	
 	public Worker getAvailableWorker(){
 		for(Worker w : workers){
-			if (w.isSelected()){
+			if (w.getCurrentState() == STATE.FOLLOWING){
 				return w;
 			}
 		}
@@ -557,7 +568,7 @@ public class World {
 	
 	public Soldier getAvailableSoldier(){
 		for(Soldier s : soldiers){
-			if (s.isSelected()){
+			if (s.getCurrentState() == STATE.FOLLOWING){
 				return s;
 			}
 		}

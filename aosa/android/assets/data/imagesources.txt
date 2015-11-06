@@ -58,6 +58,7 @@ data/imgs/summon.png
 data/imgs/assigned.png
 data/imgs/enemyspawn1.png
 data/imgs/enemyspawn2.png
+data/imgs/characterBar.png
 data/characters/mainchar.png
 data/characters/worker.png
 data/characters/grunt.png

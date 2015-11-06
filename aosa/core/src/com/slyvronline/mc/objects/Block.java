@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.slyvronline.aosa.Aosa;
 import com.slyvronline.mc.objects.buildings.Building;
 import com.slyvronline.mc.objects.characters.Worker;
+import com.slyvronline.mc.objects.characters.Character.STATE;
 
 public class Block extends Ent {
 
@@ -25,7 +26,7 @@ public class Block extends Ent {
 	}
 	
 	public void updateWorker(){
-		if (worker != null){
+		if (worker != null && worker.getCurrentState() != STATE.ATTACKING){
 			//Move worker to location
 			float centerX = this.getPosBox().getX();
 			if (worker.getPosBox().getWidth() > 1){
@@ -50,13 +51,16 @@ public class Block extends Ent {
 							Aosa.getGlobal().getGame().setGasCollected(Aosa.getGlobal().getGame().getGasCollected() + rand.nextInt(5) + 3);
 						}
 						this.overlandImg = null;
-						this.worker.setSelected(false);
+						this.worker.setCurrentState(STATE.IDLE);
 						Aosa.getGlobal().getGame().getWorld().getWorkers().add(this.worker);
 						this.worker = null;
 					}
 				}
 			}
 		}
+		
+		if (worker != null)
+			worker.update();
 	}
 	
 	@Override

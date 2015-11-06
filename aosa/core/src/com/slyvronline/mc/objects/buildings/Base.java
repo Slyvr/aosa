@@ -9,6 +9,7 @@ import com.slyvronline.aosa.Aosa;
 import com.slyvronline.mc.objects.Block;
 import com.slyvronline.mc.objects.BlockGroup;
 import com.slyvronline.mc.objects.characters.Worker;
+import com.slyvronline.mc.objects.characters.Character.STATE;
 
 public class Base extends Building{
 
@@ -42,9 +43,9 @@ public class Base extends Building{
 					80+32,
 					w.getImg().getTex().getWidth(),
 					w.getImg().getTex().getHeight()));
-			w.setSelected(false);
+			w.setCurrentState(STATE.IDLE);
 			workers.add(w);
-			grp.getWorker().setSelected(false);
+			grp.getWorker().setCurrentState(STATE.IDLE);
 			workers.add(grp.getWorker());
 			grp.setWorker(null);
 			Aosa.getGlobal().getGame().getWorld().setWorkers(workers);

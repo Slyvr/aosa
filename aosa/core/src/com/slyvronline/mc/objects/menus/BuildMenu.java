@@ -13,6 +13,7 @@ import com.slyvronline.mc.objects.buildings.Mine;
 import com.slyvronline.mc.objects.buildings.Refinery;
 import com.slyvronline.mc.objects.buildings.Tower;
 import com.slyvronline.mc.objects.characters.Worker;
+import com.slyvronline.mc.objects.characters.Character.STATE;
 import com.slyvronline.mc.utils.Utils;
 
 public class BuildMenu extends Menu {
@@ -81,7 +82,7 @@ public class BuildMenu extends Menu {
 						Aosa.getGlobal().getImgByName("mine").getTex().getWidth(),
 						Aosa.getGlobal().getImgByName("mine").getTex().getHeight()));
 				grp.setBuilding(mine);
-				worker.setSelected(false);
+				worker.setCurrentState(STATE.WORKING);
 				grp.setWorker(worker);
 				Aosa.getGlobal().getGame().getWorld().getWorkers().remove(worker);
 				Aosa.getGlobal().getCurrentMenu().setCurrentSubMenu(null);
@@ -115,7 +116,7 @@ public class BuildMenu extends Menu {
 						Aosa.getGlobal().getImgByName("refinery").getTex().getWidth(),
 						Aosa.getGlobal().getImgByName("refinery").getTex().getHeight()));
 				grp.setBuilding(refinery);
-				worker.setSelected(false);
+				worker.setCurrentState(STATE.WORKING);
 				grp.setWorker(worker);
 				Aosa.getGlobal().getGame().getWorld().getWorkers().remove(worker);
 				Aosa.getGlobal().getCurrentMenu().setCurrentSubMenu(null);
@@ -146,7 +147,7 @@ public class BuildMenu extends Menu {
 						Aosa.getGlobal().getImgByName("tower").getTex().getWidth(),
 						Aosa.getGlobal().getImgByName("tower").getTex().getHeight()));
 				grp.setBuilding(tower);
-				worker.setSelected(false);
+				worker.setCurrentState(STATE.WORKING);
 				grp.setWorker(worker);
 				Aosa.getGlobal().getGame().getWorld().getWorkers().remove(worker);
 				Aosa.getGlobal().getCurrentMenu().setCurrentSubMenu(null);
@@ -177,7 +178,7 @@ public class BuildMenu extends Menu {
 						Aosa.getGlobal().getImgByName("barracks").getTex().getWidth(),
 						Aosa.getGlobal().getImgByName("barracks").getTex().getHeight()));
 				grp.setBuilding(barracks);
-				worker.setSelected(false);
+				worker.setCurrentState(STATE.WORKING);
 				grp.setWorker(worker);
 				Aosa.getGlobal().getGame().getWorld().getWorkers().remove(worker);
 				Aosa.getGlobal().getCurrentMenu().setCurrentSubMenu(null);
@@ -208,7 +209,7 @@ public class BuildMenu extends Menu {
 						Aosa.getGlobal().getImgByName("base").getTex().getWidth(),
 						Aosa.getGlobal().getImgByName("base").getTex().getHeight()));
 				grp.setBuilding(base);
-				worker.setSelected(false);
+				worker.setCurrentState(STATE.WORKING);
 				grp.setWorker(worker);
 				Aosa.getGlobal().getGame().getWorld().getWorkers().remove(worker);
 				Aosa.getGlobal().getCurrentMenu().setCurrentSubMenu(null);

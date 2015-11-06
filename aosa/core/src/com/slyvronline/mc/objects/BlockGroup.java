@@ -7,6 +7,7 @@ import com.slyvronline.aosa.Aosa;
 import com.slyvronline.mc.objects.buildings.Building;
 import com.slyvronline.mc.objects.characters.Soldier;
 import com.slyvronline.mc.objects.characters.Worker;
+import com.slyvronline.mc.objects.characters.Character.STATE;
 
 public class BlockGroup {
 
@@ -83,7 +84,7 @@ public class BlockGroup {
 	
 	public void updateWorker(){
 		float centerX = this.blocks.get(4).getPosBox().getX();
-		if (worker != null){
+		if (worker != null && worker.getCurrentState() != STATE.ATTACKING){
 			if (worker.getPosBox().getWidth() > 1){
 				if (worker.getPosBox().getX() < centerX){
 					worker.getPosBox().setX(worker.getPosBox().getX() + worker.getJogSpeed());
@@ -115,13 +116,16 @@ public class BlockGroup {
 				}
 			}
 		}
+		
+		if (worker != null)
+			worker.update();
 	}
 	
 	public void updateSoldier(){
 		float centerX = this.blocks.get(4).getPosBox().getX();
 		if (soldiers.size() > 0){
 			for(Soldier soldier : soldiers){
-				if (soldier.getPosBox().getWidth() > 1){
+				if (soldier.getCurrentState() != STATE.ATTACKING){
 					if (soldier.getPosBox().getX() < centerX){
 						soldier.getPosBox().setX(soldier.getPosBox().getX() + soldier.getWalkSpeed());
 					}
@@ -142,6 +146,8 @@ public class BlockGroup {
 							soldiers.get(0).getPosBox().setY(80+32+85);
 					}
 				}
+				
+				soldier.update();
 			}
 		}
 	}

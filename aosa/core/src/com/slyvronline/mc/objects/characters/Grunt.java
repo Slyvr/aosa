@@ -4,12 +4,10 @@ import com.badlogic.gdx.math.Rectangle;
 import com.slyvronline.aosa.Aosa;
 import com.slyvronline.mc.objects.Block;
 import com.slyvronline.mc.objects.BlockGroup;
+import com.slyvronline.mc.objects.characters.Character.STATE;
 
 public class Grunt extends Character{
 
-	private enum STATE {IDLE,CHARGING,ATTACKING};
-	private STATE currentState;
-	
 	private Worker targetWorker;
 	private Soldier targetSoldier;
 	private MainCharacter targetChar;
@@ -21,6 +19,7 @@ public class Grunt extends Character{
 		super();
 		this.setImg(Aosa.getGlobal().getImgByName("grunt"));
 		currentState = STATE.CHARGING;
+		this.setAtk(0.5f);
 	}
 
 	@Override
@@ -48,6 +47,7 @@ public class Grunt extends Character{
 						if (this.getPosBox().getX() >= s.getPosBox().getX() - this.getSightDistance() &&
 								this.getPosBox().getX() <= s.getPosBox().getX() + this.getSightDistance()){
 							foundSomethingToAttack = true;
+							prevState = currentState;
 							currentState = STATE.ATTACKING;
 							targetSoldier = s;
 							targetSet = true;
@@ -65,6 +65,7 @@ public class Grunt extends Character{
 			if (this.getPosBox().getX() >= s.getPosBox().getX() - this.getSightDistance() &&
 					this.getPosBox().getX() <= s.getPosBox().getX() + this.getSightDistance()){
 				foundSomethingToAttack = true;
+				prevState = currentState;
 				currentState = STATE.ATTACKING;
 				targetSoldier = s;
 				break;
@@ -76,6 +77,7 @@ public class Grunt extends Character{
 			if (this.getPosBox().getX() >= w.getPosBox().getX() - this.getSightDistance() &&
 					this.getPosBox().getX() <= w.getPosBox().getX() + this.getSightDistance()){
 				foundSomethingToAttack = true;
+				prevState = currentState;
 				currentState = STATE.ATTACKING;
 				targetWorker = w;
 				break;
@@ -90,6 +92,7 @@ public class Grunt extends Character{
 					if (this.getPosBox().getX() >= bg.getWorker().getPosBox().getX() - this.getSightDistance() &&
 							this.getPosBox().getX() <= bg.getWorker().getPosBox().getX() + this.getSightDistance()){
 						foundSomethingToAttack = true;
+						prevState = currentState;
 						currentState = STATE.ATTACKING;
 						targetWorker = bg.getWorker();
 						targetSet = true;
@@ -98,6 +101,7 @@ public class Grunt extends Character{
 				else if (bg.getBuilding() != null && (this.getPosBox().getX() >= bg.getBuilding().getPosBox().getX() - this.getSightDistance() &&
 						this.getPosBox().getX() <= bg.getBuilding().getPosBox().getX() + this.getSightDistance())){
 					foundSomethingToAttack = true;
+					prevState = currentState;
 					currentState = STATE.ATTACKING;
 					targetBuilding = bg;
 					targetSet = true;
@@ -108,6 +112,7 @@ public class Grunt extends Character{
 							if (this.getPosBox().getX() >= b.getWorker().getPosBox().getX() - this.getSightDistance() &&
 									this.getPosBox().getX() <= b.getWorker().getPosBox().getX() + this.getSightDistance()){
 								foundSomethingToAttack = true;
+								prevState = currentState;
 								currentState = STATE.ATTACKING;
 								targetWorker = b.getWorker();
 								targetSet = true;
@@ -127,12 +132,14 @@ public class Grunt extends Character{
 			if (this.getPosBox().getX() >= charac.getPosBox().getX() - this.getSightDistance() &&
 					this.getPosBox().getX() <= charac.getPosBox().getX() + this.getSightDistance()){
 				foundSomethingToAttack = true;
+				prevState = currentState;
 				currentState = STATE.ATTACKING;
 				targetChar = charac;
 			}
 		}
 		
 		if (!foundSomethingToAttack){
+			prevState = currentState;
 			currentState = STATE.CHARGING;
 			targetWorker = null;
 			targetSoldier = null;
@@ -148,7 +155,7 @@ public class Grunt extends Character{
 		if (targetChar != null) targetPos = targetChar.getPosBox();
 		if (targetBuilding != null && targetBuilding.getBuilding() != null) targetPos = targetBuilding.getBuilding().getPosBox();
 		
-		int speed = this.getJogSpeed();
+		float speed = this.getJogSpeed();
 		
 		if (targetPos != null){
 			if (this.getPosBox().getX() < (targetPos.getX()-this.getAttackDistance())){
@@ -161,37 +168,61 @@ public class Grunt extends Character{
 				//Within attacking distance
 				if (targetWorker != null){
 					targetWorker.setHp(targetWorker.getHp() - this.getAtk());
+					if (targetWorker.getHp() <= 0){
+						targetWorker = null;
+						STATE state = currentState;
+						currentState = prevState;
+						prevState = state;
+					}
 				}
 				if (targetSoldier != null){
 					targetSoldier.setHp(targetSoldier.getHp() - this.getAtk());
+					if (targetSoldier.getHp() <= 0){
+						targetSoldier = null;
+						STATE state = currentState;
+						currentState = prevState;
+						prevState = state;
+					}
 				}
 				if (targetChar != null){
 					targetChar.setHp(targetChar.getHp() - this.getAtk());
+					if (targetChar.getHp() <= 0){
+						targetChar = null;
+						STATE state = currentState;
+						currentState = prevState;
+						prevState = state;
+					}
 				}
 				if (targetBuilding != null && targetBuilding.getBuilding() != null){
 					targetBuilding.getBuilding().setHp(targetBuilding.getBuilding().getHp() - this.getAtk());
+					if (targetBuilding.getBuilding().getHp() <= 0){
+						targetBuilding = null;
+						STATE state = currentState;
+						currentState = prevState;
+						prevState = state;
+					}
 				}
 			}
 		}
 	}
 	
 	public void updateMovement(){
-		int speed = this.getWalkSpeed();
+		float speed = this.getWalkSpeed();
 		
 		if (chargingRight){
 			this.getPosBox().setX(this.getPosBox().getX() + speed);
+			if (this.getPosBox().getX() > Aosa.getGlobal().getGame().getWorld().getEnemySpawn2().getPosBox().getX()){
+				//destroy entity
+				this.setHp(0);
+			}
 		}
 		else{
 			this.getPosBox().setX(this.getPosBox().getX() - speed);
+			if (this.getPosBox().getX() < Aosa.getGlobal().getGame().getWorld().getEnemySpawn1().getPosBox().getX()){
+				//destroy entity
+				this.setHp(0);
+			}
 		}
-	}
-
-	public STATE getCurrentState() {
-		return currentState;
-	}
-
-	public void setCurrentState(STATE currentState) {
-		this.currentState = currentState;
 	}
 
 	public Worker getTargetWorker() {
