@@ -12,6 +12,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.slyvronline.aosa.Aosa;
 import com.slyvronline.mc.objects.Ent;
 import com.slyvronline.mc.objects.Menu;
+import com.slyvronline.mc.objects.characters.Grunt;
+import com.slyvronline.mc.objects.characters.MainCharacter;
 import com.slyvronline.mc.utils.TextInput;
 import com.slyvronline.mc.utils.Utils;
 
@@ -47,7 +49,38 @@ public class GameMenu extends Menu {
 					this.setCurrentSubMenu(this.getSubMenuByName("pause"));
 				}
 				
-				//Game logic here
+				updateArrows();
+			}
+		}
+	}
+	
+	public void updateArrows(){
+		if (Aosa.getGlobal().getGame().getWorld().getGrunts().size() > 0){
+			MainCharacter charac = Aosa.getGlobal().getGame().getWorld().getMainChar();
+			boolean leftDisplay = false;
+			boolean rightDisplay = false;
+			for(Grunt g : Aosa.getGlobal().getGame().getWorld().getGrunts()){
+				if (g.getPosBox().getX() >= charac.getPosBox().getX() + charac.getSightDistance() ||
+						g.getPosBox().getX() <= charac.getPosBox().getX() - charac.getSightDistance()){
+					if (g.getPosBox().getX() < charac.getPosBox().getX()){
+						leftDisplay = true;
+					}
+					if (g.getPosBox().getX() > charac.getPosBox().getX()){
+						rightDisplay = true;
+					}
+				}
+			}
+			if (leftDisplay){
+				this.getEntByName("leftArrow").setDisplay(true);
+			}
+			else{
+				this.getEntByName("leftArrow").setDisplay(false);
+			}
+			if (rightDisplay){
+				this.getEntByName("rightArrow").setDisplay(true);
+			}
+			else{
+				this.getEntByName("rightArrow").setDisplay(false);
 			}
 		}
 	}

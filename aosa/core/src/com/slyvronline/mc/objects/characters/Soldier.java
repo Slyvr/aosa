@@ -1,7 +1,6 @@
 package com.slyvronline.mc.objects.characters;
 
 import com.slyvronline.aosa.Aosa;
-import com.slyvronline.mc.objects.characters.Character.STATE;
 
 public class Soldier extends Character {
 	
@@ -9,10 +8,13 @@ public class Soldier extends Character {
 	
 	public Soldier(){
 		super();
-		this.setAtk(0.5f);
+		this.setBaseHp(150);
+		this.setHp(this.getBaseHp());
+		this.setAtk(0.8f);
 	}
 
 	public void update(){
+		super.update();
 		
 		if (currentState == STATE.ATTACKING){
 			attackEnemy();

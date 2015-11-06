@@ -36,6 +36,8 @@ data/menuitems/music_play.png
 data/menuitems/music_prev.png
 data/menuitems/whitecover.png
 data/menuitems/spinwheel.png
+data/menuitems/leftarrow.png
+data/menuitems/rightarrow.png
 data/imgs/grass.png
 data/imgs/dirt.png
 data/imgs/fulldirt.png

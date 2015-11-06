@@ -12,6 +12,8 @@ public class Worker extends Character {
 	}
 
 	public void update(){
+		super.update();
+		
 		if (currentState == STATE.ATTACKING){
 			attackEnemy();
 		}

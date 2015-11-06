@@ -23,11 +23,13 @@ public class Updater {
 			
 			Aosa.getGlobal().getMusicMenu().update();
 			
-			if (Aosa.getGlobal().getBackMenu()!=null)
-				Aosa.getGlobal().getBackMenu().update();
-			
-			if (Aosa.getGlobal().getOverlapMenu()!=null)
-				Aosa.getGlobal().getOverlapMenu().update();
+			if (Aosa.getGlobal().getGame() != null && Aosa.getGlobal().getCurrentMenu().getName().equals("game")){
+				if (Aosa.getGlobal().getBackMenu()!=null)
+					Aosa.getGlobal().getBackMenu().update();
+				
+				if (Aosa.getGlobal().getOverlapMenu()!=null)
+					Aosa.getGlobal().getOverlapMenu().update();
+			}
 			
 			Aosa.getGlobal().getCamera().update();
 			Aosa.getGlobal().getHudCam().update();

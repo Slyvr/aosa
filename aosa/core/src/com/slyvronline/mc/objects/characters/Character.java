@@ -17,6 +17,7 @@ public abstract class Character extends Ent {
 	
 	private float baseHp;
 	private float hp;
+	private float reviveAmt;
 	private float baseEnergy;
 	private float energy;
 	private float atk;
@@ -27,6 +28,9 @@ public abstract class Character extends Ent {
 	private float runSpeed;
 	private float sightDistance;
 	private float attackDistance;
+	
+	private long timeOfLastAttack;
+	private long reviveTimer;
 	
 	public Character(){
 		walkSpeed = 5;
@@ -39,10 +43,23 @@ public abstract class Character extends Ent {
 		abilities = new ArrayList<Ability>();
 		attackDistance = 45;
 		sightDistance = 300;
+		reviveAmt = 2;
 	}
 	
 	public void update(){
-		
+		reviveOverTime();
+	}
+	
+	public void reviveOverTime(){
+		if (hp < baseHp && System.currentTimeMillis() > timeOfLastAttack + 3000){
+			if (System.currentTimeMillis() > reviveTimer + 1000){
+				hp = hp + reviveAmt;
+				if (hp > baseHp){
+					hp = baseHp;
+				}
+				reviveTimer = System.currentTimeMillis();
+			}
+		}
 	}
 	
 	public void render(SpriteBatch batch){
@@ -81,6 +98,9 @@ public abstract class Character extends Ent {
 	}
 
 	public void setHp(float hp) {
+		if (hp < this.hp){
+			timeOfLastAttack = System.currentTimeMillis();
+		}
 		this.hp = hp;
 	}
 

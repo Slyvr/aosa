@@ -156,6 +156,30 @@ public class LoadMenus {
 				Gdx.graphics.getWidth() - 100, Gdx.graphics.getHeight(),0,0));
 		ents.add(debugTooltip);
 		
+		Ent leftArrow = new Ent();
+		leftArrow.setName("leftArrow");
+		leftArrow.setImg(Aosa.getGlobal().getImgByName("leftarrow"));
+		leftArrow.setPosBox(new Rectangle(
+				(Gdx.graphics.getWidth()/2) - leftArrow.getImg().getTex().getWidth(),
+				Gdx.graphics.getHeight() - leftArrow.getImg().getTex().getHeight() - 64,
+				leftArrow.getImg().getTex().getWidth(),
+				leftArrow.getImg().getTex().getHeight()));
+		leftArrow.setColor(Color.RED);
+		leftArrow.setDisplay(false);
+		ents.add(leftArrow);
+		
+		Ent rightArrow = new Ent();
+		rightArrow.setName("rightArrow");
+		rightArrow.setImg(Aosa.getGlobal().getImgByName("rightarrow"));
+		rightArrow.setPosBox(new Rectangle(
+				(Gdx.graphics.getWidth()/2) + 16,
+				Gdx.graphics.getHeight() - rightArrow.getImg().getTex().getHeight() - 64,
+				rightArrow.getImg().getTex().getWidth(),
+				rightArrow.getImg().getTex().getHeight()));
+		rightArrow.setColor(Color.RED);
+		rightArrow.setDisplay(false);
+		ents.add(rightArrow);
+		
 		menu.setEnts(ents);
 		
 		ArrayList<Menu> subMenus = new ArrayList<Menu>();

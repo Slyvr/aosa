@@ -24,6 +24,7 @@ public class Grunt extends Character{
 
 	@Override
 	public void update() {
+		super.update();
 		
 		checkAttack();
 		
