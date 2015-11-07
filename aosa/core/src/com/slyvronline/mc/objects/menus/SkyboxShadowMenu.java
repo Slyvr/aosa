@@ -51,6 +51,5 @@ public class SkyboxShadowMenu extends Menu {
 			initiatingNight = false;
 		}
 		
-		System.out.println(skybox_shadow.getColor().a);
 	}
 }

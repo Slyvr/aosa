@@ -105,6 +105,8 @@ public class World {
 			s.update();
 		}
 		
+		mainChar.update();
+		
 		enemySpawn1.update();
 		enemySpawn2.update();
 		
@@ -183,15 +185,58 @@ public class World {
 			for(int i=0; i<spawnCounter; i++){
 				Grunt g = new Grunt();
 				g.setName("Grunt");
-				g.setPosBox(new Rectangle(spawner.getSpawnPos().getX() + (i*16),
+				g.setPosBox(new Rectangle(spawner.getSpawnPos().getX() + (i*g.getImg().getTex().getWidth()),
 						spawner.getSpawnPos().getY(),
 						g.getImg().getTex().getWidth(),
 						g.getImg().getTex().getHeight()));
-				if (spawner.getName().contains("1")) g.setChargingRight(true);
-				else g.setChargingRight(false);
+				
+				Rectangle gruntOverlapPos = new Rectangle(g.getPosBox().getX()+16,80+5,1,1);
+				if (spawner.getName().contains("1")){
+					g.setChargingRight(true);
+					//Get current block
+					for(int blockIndex=0; blockIndex < this.getBlockGroups().get(0).getBlocks().size(); blockIndex++){
+						Block b = this.getBlockGroups().get(0).getBlocks().get(blockIndex);
+						if (b.getPosBox().overlaps(gruntOverlapPos)){
+							g.setBlockIndex(blockIndex);
+							g.setBlockGroupIndex(0);
+							break;
+						}
+					}
+					if (g.getBlockIndex() == null){
+						for(int blockIndex=0; blockIndex < this.getBlockGroups().get(1).getBlocks().size(); blockIndex++){
+							Block b = this.getBlockGroups().get(0).getBlocks().get(blockIndex);
+							if (b.getPosBox().overlaps(gruntOverlapPos)){
+								g.setBlockIndex(blockIndex);
+								g.setBlockGroupIndex(1);
+								break;
+							}
+						}
+					}
+				}
+				else{
+					g.setChargingRight(false);
+					//Get current block
+					for(int blockIndex=0; blockIndex < this.getBlockGroups().get(this.getBlockGroups().size()-1).getBlocks().size(); blockIndex++){
+						Block b = this.getBlockGroups().get(0).getBlocks().get(blockIndex);
+						if (b.getPosBox().overlaps(gruntOverlapPos)){
+							g.setBlockIndex(blockIndex);
+							g.setBlockGroupIndex(this.getBlockGroups().size()-1);
+							break;
+						}
+					}
+					if (g.getBlockIndex() == null){
+						for(int blockIndex=0; blockIndex < this.getBlockGroups().get(this.getBlockGroups().size()-2).getBlocks().size(); blockIndex++){
+							Block b = this.getBlockGroups().get(0).getBlocks().get(blockIndex);
+							if (b.getPosBox().overlaps(gruntOverlapPos)){
+								g.setBlockIndex(blockIndex);
+								g.setBlockGroupIndex(this.getBlockGroups().size()-2);
+								break;
+							}
+						}
+					}
+				}
 				this.grunts.add(g);
 			}
-			System.out.println("Spawned Enemies "+spawner.getName());
 			spawnedEnemies = true;
 		}
 	}

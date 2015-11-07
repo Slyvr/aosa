@@ -83,6 +83,10 @@ public class GameMenu extends Menu {
 				this.getEntByName("rightArrow").setDisplay(false);
 			}
 		}
+		else{
+			this.getEntByName("leftArrow").setDisplay(false);
+			this.getEntByName("rightArrow").setDisplay(false);
+		}
 	}
 	
 }

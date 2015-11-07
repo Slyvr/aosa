@@ -47,9 +47,11 @@ public class Soldier extends Character {
 			float speed = this.getJogSpeed();
 			if (this.getPosBox().getX() < (targetGrunt.getPosBox().getX()-this.getAttackDistance())){
 				this.getPosBox().setX(this.getPosBox().getX() + speed);
+				this.getPosBox().setY(80+32);
 			}
 			else if (this.getPosBox().getX() > (targetGrunt.getPosBox().getX()+this.getAttackDistance())){
 				this.getPosBox().setX(this.getPosBox().getX() - speed);
+				this.getPosBox().setY(80+32);
 			}
 			else{
 				//Within attacking distance

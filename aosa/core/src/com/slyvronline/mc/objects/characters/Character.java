@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.slyvronline.aosa.Aosa;
+import com.slyvronline.mc.objects.Block;
+import com.slyvronline.mc.objects.BlockGroup;
 import com.slyvronline.mc.objects.Ent;
 import com.slyvronline.mc.objects.Img;
 import com.slyvronline.mc.objects.abilities.Ability;
@@ -32,6 +34,9 @@ public abstract class Character extends Ent {
 	private long timeOfLastAttack;
 	private long reviveTimer;
 	
+	private Integer blockGroupIndex;
+	private Integer blockIndex;
+	
 	public Character(){
 		walkSpeed = 5;
 		jogSpeed = 8;
@@ -48,6 +53,59 @@ public abstract class Character extends Ent {
 	
 	public void update(){
 		reviveOverTime();
+		checkCurrentBlocks();
+	}
+	
+	public void checkCurrentBlocks(){
+		if (blockGroupIndex != null && blockIndex != null){
+			BlockGroup currentGroup = Aosa.getGlobal().getGame().getWorld().getBlockGroups().get(blockGroupIndex);
+			Block currentBlock = currentGroup.getBlocks().get(blockIndex);
+			Block nextBlock = null;
+			BlockGroup nextGroup = null;
+			Integer nextBlockIndex = null;
+			Integer nextGroupIndex = null;
+			boolean movingRight = false;
+			boolean movingLeft = false;
+			if (this.getPosBox().getX() > currentBlock.getPosBox().getX()+currentBlock.getPosBox().getWidth()){
+				//If character is to the right of the current block
+				try{
+					nextBlock = currentGroup.getBlocks().get(blockIndex+1);
+					nextBlockIndex = blockIndex + 1;
+				}catch(ArrayIndexOutOfBoundsException ex){
+					
+				}
+					movingRight = true;
+			}
+			else if (this.getPosBox().getX() < currentBlock.getPosBox().getX()){
+				//If chracter is to the left of the current block
+				try{
+					nextBlock = currentGroup.getBlocks().get(blockIndex-1);
+					nextBlockIndex = blockIndex - 1;
+				}catch(ArrayIndexOutOfBoundsException ex){
+					
+				}
+				movingLeft = true;
+			}
+			
+			if (nextBlock == null){
+				//Next block not in current group, select next group
+				if (movingRight){
+					nextGroup = Aosa.getGlobal().getGame().getWorld().getBlockGroups().get(blockGroupIndex + 1);
+					nextGroupIndex = blockGroupIndex + 1;
+				}
+				else if (movingLeft){
+					nextGroup = Aosa.getGlobal().getGame().getWorld().getBlockGroups().get(blockGroupIndex - 1);
+					nextGroupIndex = blockGroupIndex - 1;
+				}
+			}
+			else{
+				blockIndex = nextBlockIndex;
+			}
+			
+			if (nextGroup != null){
+				blockGroupIndex = nextGroupIndex;
+			}
+		}
 	}
 	
 	public void reviveOverTime(){
@@ -206,6 +264,46 @@ public abstract class Character extends Ent {
 
 	public void setPrevState(STATE prevState) {
 		this.prevState = prevState;
+	}
+
+	public float getReviveAmt() {
+		return reviveAmt;
+	}
+
+	public void setReviveAmt(float reviveAmt) {
+		this.reviveAmt = reviveAmt;
+	}
+
+	public long getTimeOfLastAttack() {
+		return timeOfLastAttack;
+	}
+
+	public void setTimeOfLastAttack(long timeOfLastAttack) {
+		this.timeOfLastAttack = timeOfLastAttack;
+	}
+
+	public long getReviveTimer() {
+		return reviveTimer;
+	}
+
+	public void setReviveTimer(long reviveTimer) {
+		this.reviveTimer = reviveTimer;
+	}
+
+	public Integer getBlockGroupIndex() {
+		return blockGroupIndex;
+	}
+
+	public void setBlockGroupIndex(Integer blockGroupIndex) {
+		this.blockGroupIndex = blockGroupIndex;
+	}
+
+	public Integer getBlockIndex() {
+		return blockIndex;
+	}
+
+	public void setBlockIndex(Integer blockIndex) {
+		this.blockIndex = blockIndex;
 	}
 	
 }

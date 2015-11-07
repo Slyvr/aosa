@@ -17,7 +17,6 @@ public class LoadImgs {
 	public static void load(){
 		imgs = new ArrayList<Img>();
 		
-		System.out.println("Loading Images Now!");
 		FileHandle fh = Gdx.files.internal("data/imagesources.txt");
 		
 		loadImgsFromText(fh.readString());

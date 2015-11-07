@@ -159,13 +159,25 @@ public class Grunt extends Character{
 		float speed = this.getJogSpeed();
 		
 		if (targetPos != null){
+			boolean moveRight = false;
+			boolean moveLeft = false;
+			Rectangle collidePos = null;
 			if (this.getPosBox().getX() < (targetPos.getX()-this.getAttackDistance())){
-				this.getPosBox().setX(this.getPosBox().getX() + speed);
+				collidePos = checkGruntCollisions(true);
+				moveRight = true;
 			}
 			else if (this.getPosBox().getX() > (targetPos.getX()+this.getAttackDistance())){
+				collidePos = checkGruntCollisions(false);
+				moveLeft = true;
+			}
+			
+			if (moveRight && collidePos == null){
+				this.getPosBox().setX(this.getPosBox().getX() + speed);
+			}
+			else if (moveLeft && collidePos == null){
 				this.getPosBox().setX(this.getPosBox().getX() - speed);
 			}
-			else{
+			else if (!moveRight && !moveLeft){
 				//Within attacking distance
 				if (targetWorker != null){
 					targetWorker.setHp(targetWorker.getHp() - this.getAtk());
@@ -205,6 +217,44 @@ public class Grunt extends Character{
 				}
 			}
 		}
+	}
+	
+	public Rectangle checkGruntCollisions(boolean movingRight){
+		Rectangle collisionRec = null;
+		for(Grunt g : Aosa.getGlobal().getGame().getWorld().getGrunts()){
+			if (!g.equals(this)){
+				if (g.getPosBox().overlaps(this.getPosBox())){
+					//Check if moving Right
+					if (movingRight){
+						//If grunt is to the right of this
+						if (g.getPosBox().getX() > this.getPosBox().getX()){
+							if (collisionRec == null){
+								collisionRec = g.getPosBox();
+							}
+							//If old collision is further away than grunt
+							else if (collisionRec.getX() > g.getPosBox().getX()){
+								collisionRec = g.getPosBox();
+							}
+						}
+					}
+					//Moving left
+					else{
+						//If grunt is to the left of this
+						if (g.getPosBox().getX() < this.getPosBox().getX()){
+							if (collisionRec == null){
+								collisionRec = g.getPosBox();
+							}
+							//If old collision is further away than grunt
+							else if (collisionRec.getX() < g.getPosBox().getX()){
+								collisionRec = g.getPosBox();
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		return collisionRec;
 	}
 	
 	public void updateMovement(){
