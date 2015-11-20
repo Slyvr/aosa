@@ -390,6 +390,7 @@ public class World {
 	
 	public void setupWorld(){
 		//procedurallyGenerateWorld();
+		
 	}
 	
 	public void procedurallyGenerateWorld(){
